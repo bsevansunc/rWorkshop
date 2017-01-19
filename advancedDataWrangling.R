@@ -1,28 +1,27 @@
 # Today's libraries:
 
+library(RCurl)
 library(tidyverse)
 library(lubridate)
 library(stringr)
 
-
 # Goals today include:
-1) Reading in tibbles
-2) Manipulating strings using stringr
-3) Combining data tables using join and bind
-4) Working with dates
-5) Selecting fields (review)
-6) Subsetting with %in%
+# 
+# 1) Reading in tibbles
+# 2) Manipulating strings using stringr
+# 3) Combining data tables using join and bind
+# 4) Working with dates
+# 5) Selecting fields (review)
+# 6) Subsetting with %in%
+# 7) Summarizing data (review and new)
 
+gitSite <- 'https://raw.githubusercontent.com/bsevansunc/rWorkshop/master/'
 
+dirtyBirdURL <- getURL(paste0(gitSite, 'dirtyBirdData','.csv'))
 
+dirtyBandingURL <- getURL(paste0(gitSite, 'dirtyBandingData','.csv'))
 
-
-
-
-
-
-
-
+dirtyResightURL <- getURL(paste0(gitSite, 'dirtyResightData','.csv'))
 
 #=================================================================================*
 # ---- SET-UP ----
@@ -30,11 +29,11 @@ library(stringr)
 
 # First, a better way to read files than read.csv:
 
-dirtyBird <- read_csv('dirtyBirdData.csv')
+dirtyBird <- read_csv(dirtyBirdURL)
   
-dirtyBanding <- read_csv('dirtyBandingData.csv')
+dirtyBanding <- read_csv(dirtyBandingURL)
 
-dirtyResight <- read_csv('dirtyResightData.csv')
+dirtyResight <- read_csv(dirtyResightURL)
 
 #=================================================================================*
 # ---- WORKING WITH STRINGS ----
@@ -46,12 +45,12 @@ dirtyBird
 
 # Let's take a look at the species observed:
 
-dirtyBird$speciesEnc %>% unique
+sp <- dirtyBird$speciesEnc %>% unique
 
 # Obviously punctuation is a big problem in this dataset. We can use the
 # function str_to_upper to change the case:
 
-dirtyBird$speciesEnc %>% str_to_upper %>% unique
+sp %>% str_to_upper
 
 # Detect a string:
 
@@ -150,13 +149,13 @@ addDashFun('930-48233')
 
 # Read in the data again, with pipe to fix the band numbers:
 
-dirtyBird <- read_csv('dirtyBirdData.csv') %>%
+dirtyBird <- read_csv(dirtyBirdURL) %>%
   mutate(bandNumber = addDashFun(bandNumber))
 
-dirtyBanding <- read_csv('dirtyBandingData.csv') %>%
+dirtyBanding <- read_csv(dirtyBandingURL) %>%
   mutate(bandNumber = addDashFun(bandNumber))
 
-dirtyResight <- read_csv('dirtyResightData.csv') %>%
+dirtyResight <- read_csv(dirtyResightURL) %>%
   mutate(bandNumber = addDashFun(bandNumber))
 
 # We may want to ensure that '\t' is nowhere in the database, we can use mutate_all for this:
@@ -164,18 +163,19 @@ dirtyResight <- read_csv('dirtyResightData.csv') %>%
 read_csv('dirtyBirdData.csv') %>%
   mutate_all(funs(str_trim))
 
-# Read in the data, now fixing the band numbers, species names, and trimming all fields:
+# A challenge! Read in the data, now fixing the band numbers, species names, and
+# trimming all fields:
 
-dirtyBird <- read_csv('dirtyBirdData.csv') %>%
+dirtyBird <- read_csv(dirtyBirdURL) %>%
   mutate(bandNumber = addDashFun(bandNumber),
          speciesEnc = str_to_upper(speciesEnc)) %>%
   mutate_all(funs(str_trim))
 
-dirtyBanding <- read_csv('dirtyBandingData.csv') %>%
+dirtyBanding <- read_csv(dirtyBandingURL) %>%
   mutate(bandNumber = addDashFun(bandNumber)) %>%
   mutate_all(funs(str_trim))
 
-dirtyResight <- read_csv('dirtyResightData.csv') %>%
+dirtyResight <- read_csv(dirtyResightURL) %>%
   mutate(bandNumber = addDashFun(bandNumber)) %>%
   mutate_all(funs(str_trim))
 
