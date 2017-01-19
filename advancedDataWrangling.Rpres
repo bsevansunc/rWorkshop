@@ -5,6 +5,11 @@ date:
 autosize: true
 transition: none
 width: 1600
+  
+R Workshop: Data management in R  
+Brian S Evans  
+Migratory Bird Center 
+
 
 Goals of this lesson
 ========================================================
@@ -605,11 +610,12 @@ dfLong %>% tbl_df
 
 III. Data wrangling in the tidyverse: Rules of the road
 ========================================================
+<img style="float: right; width:600px; height:500px; margin: 0px 0px 0px 0px;" src="http://www.phdcomics.com/comics/archive/phd052810s.gif">
 1) Start with raw data and DO NOT store intermediate files*  
 2) Provide a new line of script for each operation, connected by pipes  
 3) DO NOT assign names to intermediate files in a script unless absolutely necessary  
-
-**Certainly do not Clean:**
+<br style="clear:both" />
+**Certainly do not do this:**
 ```{r, eval = FALSE}
 
 dfLong2016 <- filter(dfLong, year == 2016)
@@ -623,11 +629,12 @@ write_csv(dfLong2016A, 'dfLong2016A.csv')
 
 III. Data wrangling in the tidyverse: Rules of the road
 ========================================================
+<img style="float: right; width:600px; height:500px; margin: 0px 0px 0px 0px;" src="http://www.phdcomics.com/comics/archive/phd052810s.gif">
 1) Start with raw data and DO NOT store intermediate files*  
 2) Provide a new line of script for each operation, connected by pipes  
 3) DO NOT assign names to intermediate files in a script unless absolutely necessary  
-
-**Do not Clean either:**
+<br style="clear:both" />
+**Do not do this either:**
 ```{r, eval = FALSE}
 dfLong2016 <- filter(dfLong, year == 2016)
 
@@ -638,11 +645,12 @@ dfLong2016A
 
 III. Data wrangling in the tidyverse: Rules of the road
 ========================================================
+<img style="float: right; width:600px; height:500px; margin: 0px 0px 0px 0px;" src="http://www.phdcomics.com/comics/archive/phd052810s.gif">
 1) Start with raw data and DO NOT store intermediate files*  
 2) Provide a new line of script for each operation, connected by pipes  
 3) DO NOT assign names to intermediate files in a script unless absolutely necessary  
-
-**Clean:**
+<br style="clear:both" />
+**Do this:**
 ```{r, eval = FALSE}
 dfLong %>%
   filter(
