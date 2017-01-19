@@ -23,8 +23,8 @@ I. Rules of the road for tidy data
 type: section
 
 1) Store all data in long format  
-2) Do not store multiple levels of observation on one table
-3) Do not store data at the same level of observation on multiple tables
+2) Do not store multiple levels of observation on one table  
+3) Do not store data at the same level of observation on multiple tables  
 4) Always start with raw data ... no derived variables!  
 5) One data value per field  
 
@@ -207,16 +207,15 @@ I. Rules of the road for tidy data
 
 5) One data value per field
 
-  **Don't do this:**
+  **Do this:**
 
 ```{r, echo = FALSE}
 knitr::kable(
   dfLong %>%
     mutate(date = c('2016-06-12', '2016-06-17','2016-07-01',
                     '2017-06-14','2017-06-18','2017-06-29')) %>%
-    select(subject, date, year, value) %>%
-    mutate(sexYear = rep(c('m', 'f', 'f'),2)) %>%
-    select(-date)
+    mutate(sex = rep(c('m', 'f', 'f'),2)) %>%
+    select(subject, year, sex, value)
 )
 ````
 
