@@ -18,22 +18,21 @@ Goals of this lesson
 - Subsetting with %in%  
 - Summarizing data (review and new)  
 
-I. Rules of the road for tidy data
-====================================
-type: section
+I. Rules of the road for tidy data 
+========================================================
+<img style="float: right; width:330px; height:330px; margin: 0px 10px 10px 0px;" src="https://pbs.twimg.com/profile_images/677589103710306304/m56O6Wgf.jpg">
 
-1) Store all data in long format  
-2) Do not store multiple levels of observation on one table  
-3) Do not store data at the same level of observation on multiple tables  
-4) Always start with raw data ... no derived variables!  
-5) One data value per field  
+- Tidy data are easy to:
+  - Manipulate
+  - Summarize
+  - Analyze
+- Understanding dirty vs. clean data is key
 
 I. Rules of the road for tidy data
 ========================================================
+<br style="clear:both" />
 
-1) Store all data in long format  
-
-  **Wide format data:**
+**Dirty:**
 
 ```{r, echo = FALSE}
 library(RCurl)
@@ -63,12 +62,98 @@ dfWide <- data.frame(
 knitr::kable(dfWide)
 ```
 
+----
+<br style="clear:both" />
+
+
 I. Rules of the road for tidy data
 ========================================================
+<br style="clear:both" />
 
-1) Store all data in long format
+**Dirty:**
 
-  **Long format data:**
+```{r, echo = FALSE}
+library(RCurl)
+library(tidyverse)
+library(lubridate)
+library(stringr)
+
+gitSite <- 'https://raw.githubusercontent.com/bsevansunc/rWorkshop/master/'
+
+dirtyBirdURL <- getURL(paste0(gitSite, 'dirtyBirdData','.csv'))
+
+dirtyBandingURL <- getURL(paste0(gitSite, 'dirtyBandingData','.csv'))
+
+dirtyResightURL <- getURL(paste0(gitSite, 'dirtyResightData','.csv'))
+
+dirtyBird <- read_csv(dirtyBirdURL)
+  
+dirtyBanding <- read_csv(dirtyBandingURL)
+
+dirtyResight <- read_csv(dirtyResightURL)
+
+dfWide <- data.frame(
+  subject = c('A', 'B', 'C'),
+  mass2016 = c(13.2, 14.6, 27.1),
+  mass2017 = c(26.4, 15.2, 31.3)
+)
+knitr::kable(dfWide)
+```
+
+----
+<br style="clear:both" />
+
+**Clean:**
+
+```{r, echo = FALSE}
+dfLong <- dfWide %>%
+  gather(key = year,
+         value = value,
+         mass2016:mass2017) %>%
+  mutate(year = str_replace_all(year, 'mass', ''))
+knitr::kable(dfLong)
+```
+
+I. Rules of the road for tidy data 
+========================================================
+
+1) Store all data in long format  
+
+**Wide format data:**
+
+```{r, echo = FALSE}
+library(RCurl)
+library(tidyverse)
+library(lubridate)
+library(stringr)
+
+gitSite <- 'https://raw.githubusercontent.com/bsevansunc/rWorkshop/master/'
+
+dirtyBirdURL <- getURL(paste0(gitSite, 'dirtyBirdData','.csv'))
+
+dirtyBandingURL <- getURL(paste0(gitSite, 'dirtyBandingData','.csv'))
+
+dirtyResightURL <- getURL(paste0(gitSite, 'dirtyResightData','.csv'))
+
+dirtyBird <- read_csv(dirtyBirdURL)
+  
+dirtyBanding <- read_csv(dirtyBandingURL)
+
+dirtyResight <- read_csv(dirtyResightURL)
+
+dfWide <- data.frame(
+  subject = c('A', 'B', 'C'),
+  mass2016 = c(13.2, 14.6, 27.1),
+  mass2017 = c(26.4, 15.2, 31.3)
+)
+knitr::kable(dfWide)
+```
+
+***
+
+<br style="clear:both" />
+
+**Long format data:**
 
 ```{r, echo = FALSE}
 dfLong <- dfWide %>%
@@ -82,25 +167,41 @@ knitr::kable(dfLong)
 I. Rules of the road for tidy data
 ========================================================
 
-2) Do not store multiple levels of observation on one table
+<br style="clear:both" />
 
-  **Don't do this:**
+**Dirty:**
 
 ```{r, echo = FALSE}
 knitr::kable(
   dfLong %>%
     mutate(site = c(1,1,2,1,1,2),
-           canopy = rep(c(13.3,13.3,26.8),2),
-           precip = rep(c(91.7,91.7, 78.1),2))
+           canopy = rep(c(13.3,13.3,26.8),2))
 )
 ```
+
+----
+
+<br style="clear:both" />
 
 I. Rules of the road for tidy data
 ========================================================
 
-2)  Do not store multiple levels of observation on one table
+<br style="clear:both" />
 
-  **Do this:**
+**Dirty:**
+
+```{r, echo = FALSE}
+knitr::kable(
+  dfLong %>%
+    mutate(site = c(1,1,2,1,1,2),
+           canopy = rep(c(13.3,13.3,26.8),2))
+)
+```
+
+----
+<br style="clear:both" />
+
+**Clean:**
 
 ```{r, echo = FALSE}
 knitr::kable(
@@ -113,18 +214,53 @@ knitr::kable(
 knitr::kable(
   data.frame(
     site = c(1,2),
-    canopy = c(13.3,26.8),
-    precip = c(91.7, 78.1)
-  )
+    canopy = c(13.3,26.8)
+    )
 )
 ```
 
 I. Rules of the road for tidy data
 ========================================================
 
-3) Do not store data at the same level of observation on multiple tables
+2) One level of observation per table
 
-  **Don't do this:**
+**Dirty:**
+
+```{r, echo = FALSE}
+knitr::kable(
+  dfLong %>%
+    mutate(site = c(1,1,2,1,1,2),
+           canopy = rep(c(13.3,13.3,26.8),2))
+)
+```
+
+----
+<br style="clear:both" />
+
+**Clean:**
+
+```{r, echo = FALSE}
+knitr::kable(
+  dfLong %>%
+    mutate(site = c(1,1,2,1,1,2))
+)
+````
+
+```{r, echo = FALSE}
+knitr::kable(
+  data.frame(
+    site = c(1,2),
+    canopy = c(13.3,26.8)
+    )
+)
+```
+
+I. Rules of the road for tidy data
+========================================================
+
+<br style="clear:both" />
+
+  **Dirty:**
 
 ```{r, echo = FALSE}
 knitr::kable(
@@ -140,25 +276,79 @@ knitr::kable(
 )
 ```
 
+***
+<br style="clear:both" />
+
 I. Rules of the road for tidy data
 ========================================================
-3) Do not store data at the same level of observation on multiple tables
 
-  **Do this:**
+<br style="clear:both" />
+
+  **Dirty:**
+
+```{r, echo = FALSE}
+knitr::kable(
+  dfLong %>%
+    filter(year == 2016)
+)
+````
+
+```{r, echo = FALSE}
+knitr::kable(
+  dfLong %>%
+    filter(year == 2017)
+)
+```
+
+***
+<br style="clear:both" />
+
+**Clean:**
 
 ```{r, echo = FALSE}
 knitr::kable(
   dfLong 
 )
-````
-
+```
 
 I. Rules of the road for tidy data
 ========================================================
 
-4) Always start with raw data ... no derived variables!
+3) One table per level of observation
 
-  **Don't do this:**
+  **Dirty:**
+
+```{r, echo = FALSE}
+knitr::kable(
+  dfLong %>%
+    filter(year == 2016)
+)
+````
+
+```{r, echo = FALSE}
+knitr::kable(
+  dfLong %>%
+    filter(year == 2017)
+)
+```
+
+***
+<br style="clear:both" />
+
+**Clean:**
+
+```{r, echo = FALSE}
+knitr::kable(
+  dfLong 
+)
+```
+
+I. Rules of the road for tidy data
+========================================================
+
+<br style="clear:both" />
+
+  **Dirty:**
 
 ```{r, echo = FALSE}
 knitr::kable(
@@ -169,12 +359,29 @@ knitr::kable(
 )
 ````
 
+----
+<br style="clear:both" />
+
 I. Rules of the road for tidy data
 ========================================================
 
-4) Always start with raw data ... no derived variables!
+<br style="clear:both" />
 
-  **Do this:**
+  **Dirty:**
+
+```{r, echo = FALSE}
+knitr::kable(
+  dfLong %>%
+    mutate(date = c('2016-06-12', '2016-06-17','2016-07-01',
+                    '2017-06-14','2017-06-18','2017-06-29')) %>%
+    select(subject, date, year, value)
+)
+````
+
+----
+<br style="clear:both" />
+
+**Clean:**
 
 ```{r, echo = FALSE}
 knitr::kable(dfLong %>%
@@ -182,14 +389,43 @@ knitr::kable(dfLong %>%
                                '2017-06-14','2017-06-18','2017-06-29')) %>%
                select(subject, date, value)
 )
-````
+```
 
 I. Rules of the road for tidy data
 ========================================================
 
-5) One data value per field
+4) No derived variables!
 
-  **Don't do this:**
+  **Dirty:**
+
+```{r, echo = FALSE}
+knitr::kable(
+  dfLong %>%
+    mutate(date = c('2016-06-12', '2016-06-17','2016-07-01',
+                    '2017-06-14','2017-06-18','2017-06-29')) %>%
+    select(subject, date, year, value)
+)
+````
+
+----
+<br style="clear:both" />
+
+**Clean:**
+
+```{r, echo = FALSE}
+knitr::kable(dfLong %>%
+               mutate(date = c('2016-06-12', '2016-06-17','2016-07-01',
+                               '2017-06-14','2017-06-18','2017-06-29')) %>%
+               select(subject, date, value)
+)
+```
+
+I. Rules of the road for tidy data
+========================================================
+
+<br style="clear:both" />
+
+**Dirty:**
 
 ```{r, echo = FALSE}
 knitr::kable(
@@ -200,14 +436,33 @@ knitr::kable(
     mutate(sexYear = paste0(rep(c('m', 'f', 'f'), 2), year)) %>%
     select(-c(date, year))
 )
-````
+```
+
+----
+<br style="clear:both" />
 
 I. Rules of the road for tidy data
 ========================================================
 
-5) One data value per field
+<br style="clear:both" />
 
-  **Do this:**
+**Dirty:**
+
+```{r, echo = FALSE}
+knitr::kable(
+  dfLong %>%
+    mutate(date = c('2016-06-12', '2016-06-17','2016-07-01',
+                    '2017-06-14','2017-06-18','2017-06-29')) %>%
+    select(subject, date, year, value) %>%
+    mutate(sexYear = paste0(rep(c('m', 'f', 'f'), 2), year)) %>%
+    select(-c(date, year))
+)
+```
+
+----
+<br style="clear:both" />
+
+**Clean:**
 
 ```{r, echo = FALSE}
 knitr::kable(
@@ -217,7 +472,50 @@ knitr::kable(
     mutate(sex = rep(c('m', 'f', 'f'),2)) %>%
     select(subject, year, sex, value)
 )
-````
+```
+
+I. Rules of the road for tidy data
+========================================================
+
+5) One data value per field
+
+  **Dirty:**
+
+```{r, echo = FALSE}
+knitr::kable(
+  dfLong %>%
+    mutate(date = c('2016-06-12', '2016-06-17','2016-07-01',
+                    '2017-06-14','2017-06-18','2017-06-29')) %>%
+    select(subject, date, year, value) %>%
+    mutate(sexYear = paste0(rep(c('m', 'f', 'f'), 2), year)) %>%
+    select(-c(date, year))
+)
+```
+
+----
+<br style="clear:both" />
+
+**Clean:**
+
+```{r, echo = FALSE}
+knitr::kable(
+  dfLong %>%
+    mutate(date = c('2016-06-12', '2016-06-17','2016-07-01',
+                    '2017-06-14','2017-06-18','2017-06-29')) %>%
+    mutate(sex = rep(c('m', 'f', 'f'),2)) %>%
+    select(subject, year, sex, value)
+)
+```
+
+I. Rules of the road for tidy data
+========================================================
+<img style="float: right; width:330px; height:330px; margin: 0px 0px 0px 0px;" src="https://pbs.twimg.com/profile_images/677589103710306304/m56O6Wgf.jpg">
+
+1. Store all data in long format    
+2. One level of observation per table  
+3. One table per level of observation  
+4. No derived variables!  
+5. One data value per field
 
 II. The tidyverse: Tibbles and pipes oh my!
 ========================================================
@@ -311,7 +609,7 @@ III. Data wrangling in the tidyverse: Rules of the road
 2) Provide a new line of script for each operation, connected by pipes  
 3) DO NOT assign names to intermediate files in a script unless absolutely necessary  
 
-**Certainly do not do this:**
+**Certainly do not Clean:**
 ```{r, eval = FALSE}
 
 dfLong2016 <- filter(dfLong, year == 2016)
@@ -329,7 +627,7 @@ III. Data wrangling in the tidyverse: Rules of the road
 2) Provide a new line of script for each operation, connected by pipes  
 3) DO NOT assign names to intermediate files in a script unless absolutely necessary  
 
-**Do not do this either:**
+**Do not Clean either:**
 ```{r, eval = FALSE}
 dfLong2016 <- filter(dfLong, year == 2016)
 
@@ -344,7 +642,7 @@ III. Data wrangling in the tidyverse: Rules of the road
 2) Provide a new line of script for each operation, connected by pipes  
 3) DO NOT assign names to intermediate files in a script unless absolutely necessary  
 
-**Do this:**
+**Clean:**
 ```{r, eval = FALSE}
 dfLong %>%
   filter(
