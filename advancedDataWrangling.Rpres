@@ -1,0 +1,411 @@
+Advanced data wrangling
+========================================================
+author: 
+date: 
+autosize: true
+transition: none
+width: 1600
+
+Goals of this lesson
+========================================================
+
+- Don't be a **dirty data** maker!
+- Introduction to the tidyverse
+- Manipulating strings using stringr  
+- Combining data tables using join and bind  
+- Working with dates  
+- Selecting fields (review)  
+- Subsetting with %in%  
+- Summarizing data (review and new)  
+
+I. Rules of the road for tidy data
+====================================
+type: section
+
+1) Store all data in long format  
+2) Do not store multiple levels of observation on one table
+3) Do not store data at the same level of observation on multiple tables
+4) Always start with raw data ... no derived variables!  
+5) One data value per field  
+
+I. Rules of the road for tidy data
+========================================================
+
+1) Store all data in long format  
+
+  **Wide format data:**
+
+```{r, echo = FALSE}
+library(RCurl)
+library(tidyverse)
+library(lubridate)
+library(stringr)
+
+gitSite <- 'https://raw.githubusercontent.com/bsevansunc/rWorkshop/master/'
+
+dirtyBirdURL <- getURL(paste0(gitSite, 'dirtyBirdData','.csv'))
+
+dirtyBandingURL <- getURL(paste0(gitSite, 'dirtyBandingData','.csv'))
+
+dirtyResightURL <- getURL(paste0(gitSite, 'dirtyResightData','.csv'))
+
+dirtyBird <- read_csv(dirtyBirdURL)
+  
+dirtyBanding <- read_csv(dirtyBandingURL)
+
+dirtyResight <- read_csv(dirtyResightURL)
+
+dfWide <- data.frame(
+  subject = c('A', 'B', 'C'),
+  mass2016 = c(13.2, 14.6, 27.1),
+  mass2017 = c(26.4, 15.2, 31.3)
+)
+knitr::kable(dfWide)
+```
+
+I. Rules of the road for tidy data
+========================================================
+
+1) Store all data in long format
+
+  **Long format data:**
+
+```{r, echo = FALSE}
+dfLong <- dfWide %>%
+  gather(key = year,
+         value = value,
+         mass2016:mass2017) %>%
+  mutate(year = str_replace_all(year, 'mass', ''))
+knitr::kable(dfLong)
+```
+
+I. Rules of the road for tidy data
+========================================================
+
+2) Do not store multiple levels of observation on one table
+
+  **Don't do this:**
+
+```{r, echo = FALSE}
+knitr::kable(
+  dfLong %>%
+    mutate(site = c(1,1,2,1,1,2),
+           canopy = rep(c(13.3,13.3,26.8),2),
+           precip = rep(c(91.7,91.7, 78.1),2))
+)
+```
+
+I. Rules of the road for tidy data
+========================================================
+
+2)  Do not store multiple levels of observation on one table
+
+  **Do this:**
+
+```{r, echo = FALSE}
+knitr::kable(
+  dfLong %>%
+    mutate(site = c(1,1,2,1,1,2))
+)
+````
+
+```{r, echo = FALSE}
+knitr::kable(
+  data.frame(
+    site = c(1,2),
+    canopy = c(13.3,26.8),
+    precip = c(91.7, 78.1)
+  )
+)
+```
+
+I. Rules of the road for tidy data
+========================================================
+
+3) Do not store data at the same level of observation on multiple tables
+
+  **Don't do this:**
+
+```{r, echo = FALSE}
+knitr::kable(
+  dfLong %>%
+    filter(year == 2016)
+)
+````
+
+```{r, echo = FALSE}
+knitr::kable(
+  dfLong %>%
+    filter(year == 2017)
+)
+```
+
+I. Rules of the road for tidy data
+========================================================
+3) Do not store data at the same level of observation on multiple tables
+
+  **Do this:**
+
+```{r, echo = FALSE}
+knitr::kable(
+  dfLong 
+)
+````
+
+
+I. Rules of the road for tidy data
+========================================================
+
+4) Always start with raw data ... no derived variables!
+
+  **Don't do this:**
+
+```{r, echo = FALSE}
+knitr::kable(
+  dfLong %>%
+    mutate(date = c('2016-06-12', '2016-06-17','2016-07-01',
+                    '2017-06-14','2017-06-18','2017-06-29')) %>%
+    select(subject, date, year, value)
+)
+````
+
+I. Rules of the road for tidy data
+========================================================
+
+4) Always start with raw data ... no derived variables!
+
+  **Do this:**
+
+```{r, echo = FALSE}
+knitr::kable(dfLong %>%
+               mutate(date = c('2016-06-12', '2016-06-17','2016-07-01',
+                               '2017-06-14','2017-06-18','2017-06-29')) %>%
+               select(subject, date, value)
+)
+````
+
+I. Rules of the road for tidy data
+========================================================
+
+5) One data value per field
+
+  **Don't do this:**
+
+```{r, echo = FALSE}
+knitr::kable(
+  dfLong %>%
+    mutate(date = c('2016-06-12', '2016-06-17','2016-07-01',
+                    '2017-06-14','2017-06-18','2017-06-29')) %>%
+    select(subject, date, year, value) %>%
+    mutate(sexYear = paste0(rep(c('m', 'f', 'f'), 2), year)) %>%
+    select(-c(date, year))
+)
+````
+
+I. Rules of the road for tidy data
+========================================================
+
+5) One data value per field
+
+  **Don't do this:**
+
+```{r, echo = FALSE}
+knitr::kable(
+  dfLong %>%
+    mutate(date = c('2016-06-12', '2016-06-17','2016-07-01',
+                    '2017-06-14','2017-06-18','2017-06-29')) %>%
+    select(subject, date, year, value) %>%
+    mutate(sexYear = rep(c('m', 'f', 'f'),2)) %>%
+    select(-date)
+)
+````
+
+II. The tidyverse: Tibbles and pipes oh my!
+========================================================
+![alt text](http://tidyr.tidyverse.org/logo.png)
+![alt text](http://stringr.tidyverse.org/logo.png)
+![alt text](http://readr.tidyverse.org/logo.png)
+
+```{r, eval = FALSE}
+install.packages('tidyverse')
+install.packages('stringr')
+install.packages('lubridate')
+````
+
+II. The tidyverse: Tibbles and pipes oh my!
+========================================================
+
+**Tibbles**:  
+- Show a maximum of 10 rows for long data tables
+- Show a reduced number of columns, if necessary
+- Provide the dimensions of the data table
+- Provide the class of fields in a data frame
+
+```{r, echo = FALSE}
+dfLong
+````
+
+II. The tidyverse: Tibbles and pipes oh my!
+========================================================
+
+**Tibbles**:  
+- Show a maximum of 10 rows for long data tables
+- Show a reduced number of columns, if necessary
+- Provide the dimensions of the data table
+- Provide the class of fields in a data frame
+
+```{r, echo = FALSE}
+dfLong %>% tbl_df
+dataFrame <- dfLong
+````
+
+II. The tidyverse: Tibbles and pipes oh my!
+========================================================
+<img style="float: right; margin: 0px 15px 15px 0px;" src="http://revolution-computing.typepad.com/.a/6a010534b1db25970b01a3fd380b67970b-600wi">
+
+The **Pipe operator (%>%)** allows you to pass output from an argument on the left to an argument on the right without assigning a name or nesting functions. 
+
+For example, we can make use the _tbl_df_ function and a _pipe_ to turn a regular data frame to a tibble:
+
+<br style="clear:both" />
+
+```{r, eval = FALSE}
+dataFrame %>%
+  tbl_df
+```
+
+II. The tidyverse: Tibbles and pipes oh my!
+========================================================
+
+<img style="float: right; margin: 0px 15px 15px 0px;" src="http://revolution-computing.typepad.com/.a/6a010534b1db25970b01a3fd380b67970b-600wi">
+
+The **Pipe operator (%>%)** allows you to pass output from an argument on the left to an argument on the right without assigning a name or nesting functions. 
+
+For example, we can make use the _tbl_df_ function and a _pipe_ to turn a regular data frame to a tibble:
+
+<br style="clear:both" />
+
+```{r, eval = FALSE}
+dataFrame %>%
+  tbl_df
+```
+
+Note the convention to start a new line after each pipe. This is to make your code more readable.
+
+II. The tidyverse: Tibbles and pipes oh my!
+========================================================
+We can read a data table into R directly as a tibble using the **readr** function _read_csv_. 
+
+```{r, eval = FALSE}
+read_csv(dataFrame.csv)
+```
+
+```{r, echo = FALSE}
+dfLong %>% tbl_df
+```
+
+**Let's use read_csv to load the data for today's workshop!**
+
+III. Data wrangling in the tidyverse: Rules of the road
+========================================================
+1) Start with raw data and DO NOT store intermediate files*  
+2) Provide a new line of script for each operation, connected by pipes  
+3) DO NOT assign names to intermediate files in a script unless absolutely necessary  
+
+**Certainly do not do this:**
+```{r, eval = FALSE}
+
+dfLong2016 <- filter(dfLong, year == 2016)
+
+write_csv(dfLong2016, 'dfLong2016.csv')
+
+dfLong2016A <- filter(read_csv('dfLong2016.csv'), subject == 'A')
+
+write_csv(dfLong2016A, 'dfLong2016A.csv')
+```
+
+III. Data wrangling in the tidyverse: Rules of the road
+========================================================
+1) Start with raw data and DO NOT store intermediate files*  
+2) Provide a new line of script for each operation, connected by pipes  
+3) DO NOT assign names to intermediate files in a script unless absolutely necessary  
+
+**Do not do this either:**
+```{r, eval = FALSE}
+dfLong2016 <- filter(dfLong, year == 2016)
+
+dfLong2016A <- filter(dfLong2016, subject == 'A')
+
+dfLong2016A
+```
+
+III. Data wrangling in the tidyverse: Rules of the road
+========================================================
+1) Start with raw data and DO NOT store intermediate files*  
+2) Provide a new line of script for each operation, connected by pipes  
+3) DO NOT assign names to intermediate files in a script unless absolutely necessary  
+
+**Do this:**
+```{r, eval = FALSE}
+dfLong %>%
+  filter(
+    year == 2016,
+    subject == 'A'
+    )
+```
+
+IV. dplyr review
+========================================================
+
+
+IV. String manipulation in stringr
+========================================================
+<img style="float: left; margin: 0px 15px 15px 0px;" src="http://www.catster.com/wp-content/uploads/2015/06/cat_with_string.jpg">
+
+Manipulating strings is a common data task that **stringr** has greatly simplified.  
+
+Here we'll look at the functions:
+
+<br style="clear:both" />
+
+- *str_to_upper*: Make strings all upper case
+- *str_detect*: Detect a string within a value
+- *str_trim*: Remove white space from a string
+- *str_replace_all*: Replace characters in a string
+- *str_sub*: Extract part of a string by position
+
+IV. String manipulation in stringr
+========================================================
+*str_to_upper*
+
+```{r, echo = FALSE}
+sp <- dirtyBird$speciesEnc %>% unique
+```
+
+
+```{r}
+sp
+
+sp %>%
+  str_to_upper %>%
+  unique
+````
+
+IV. String manipulation in stringr
+========================================================
+
+IV. Combining data tables using join and bind
+========================================================
+
+V. Working with dates
+========================================================
+
+VI. Selecting fields (review) 
+========================================================
+
+VII. Subsetting with %in%
+========================================================
+
+VIII. Summarizing data
+========================================================
+
