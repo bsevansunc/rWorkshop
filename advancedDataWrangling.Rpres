@@ -610,10 +610,12 @@ dfLong %>% tbl_df
 
 III. Data wrangling in the tidyverse: Rules of the road
 ========================================================
-<img style="float: right; width:600px; height:500px; margin: 0px 0px 0px 0px;" src="http://www.phdcomics.com/comics/archive/phd052810s.gif">
+<img style="float: center; width:900px; height:700px; margin: 0px 0px 0px 0px;" src="http://www.phdcomics.com/comics/archive/phd052810s.gif">
+
+III. Data wrangling in the tidyverse: Rules of the road
+========================================================
+<br style="clear:both" />
 1) Start with raw data and DO NOT store intermediate files*  
-2) Provide a new line of script for each operation, connected by pipes  
-3) DO NOT assign names to intermediate files in a script unless absolutely necessary  
 <br style="clear:both" />
 **Certainly do not do this:**
 ```{r, eval = FALSE}
@@ -629,12 +631,11 @@ write_csv(dfLong2016A, 'dfLong2016A.csv')
 
 III. Data wrangling in the tidyverse: Rules of the road
 ========================================================
-<img style="float: right; width:600px; height:500px; margin: 0px 0px 0px 0px;" src="http://www.phdcomics.com/comics/archive/phd052810s.gif">
-1) Start with raw data and DO NOT store intermediate files*  
-2) Provide a new line of script for each operation, connected by pipes  
-3) DO NOT assign names to intermediate files in a script unless absolutely necessary  
+<br style="clear:both" />
+2) DO NOT assign names to intermediate files in a script unless absolutely necessary    
 <br style="clear:both" />
 **Do not do this either:**
+
 ```{r, eval = FALSE}
 dfLong2016 <- filter(dfLong, year == 2016)
 
@@ -645,12 +646,13 @@ dfLong2016A
 
 III. Data wrangling in the tidyverse: Rules of the road
 ========================================================
-<img style="float: right; width:600px; height:500px; margin: 0px 0px 0px 0px;" src="http://www.phdcomics.com/comics/archive/phd052810s.gif">
-1) Start with raw data and DO NOT store intermediate files*  
-2) Provide a new line of script for each operation, connected by pipes  
-3) DO NOT assign names to intermediate files in a script unless absolutely necessary  
 <br style="clear:both" />
+1) Start with raw data and DO NOT store intermediate files*  
+2) DO NOT assign names to intermediate files in a script unless absolutely necessary    
+<br style="clear:both" />
+
 **Do this:**
+
 ```{r, eval = FALSE}
 dfLong %>%
   filter(
@@ -658,6 +660,119 @@ dfLong %>%
     subject == 'A'
     )
 ```
+
+III. Data wrangling in the tidyverse: Rules of the road
+========================================================
+<br style="clear:both" />
+3) Provide a new line of script for each operation, connected by pipes   
+<br style="clear:both" />
+
+**Do not do this:**
+```{r, eval = FALSE}
+dfLong %>% filter(year == 2016) %>% mutate(state = 'ridiculous')
+```
+
+**Do this:**
+```{r, eval = FALSE}
+dfLong %>%
+  filter(year == 2016) %>%
+  mutate(state = 'ridiculous')
+```
+
+III. Data wrangling in the tidyverse: Rules of the road
+========================================================
+<br style="clear:both" />
+4) Provide adequate commenting **above** operations
+<br style="clear:both" />
+
+```{r, eval = FALSE}
+
+# Filter by year and subject:
+
+dfLong %>%
+  filter(
+    year == 2016,
+    subject == 'A'
+    )
+```
+
+III. Data wrangling in the tidyverse: Rules of the road
+========================================================
+<br style="clear:both" />
+5) Begin scripts with any necessary set-up and arrange scripts in ordered sections  
+(e.g., set-up, wrangling, analysis, figures)
+
+<br style="clear:both" />
+
+```{r, eval = FALSE}
+# Load libraries:
+
+library(tidyverse)
+library(stringr)
+library(lubridate)
+
+# Get data:
+
+dfLong <- read_csv('dfLong.csv')
+```
+
+III. Data wrangling in the tidyverse: Rules of the road
+========================================================
+<br style="clear:both" />
+6) Do not use _setwd_, but do remind yourself of your working directory!
+<br style="clear:both" />
+
+**Do not do this this:**
+```{r, eval = FALSE}
+setwd('C:/Users/Brian/Desktop/gits/rWorkshop')
+```
+
+**Do this:**
+```{r, eval = FALSE}
+# my working directory: C:/Users/Brian/Desktop/gits/rWorkshop
+```
+
+III. Data wrangling in the tidyverse: Rules of the road
+========================================================
+<br style="clear:both" />
+7) If an R package is only used once or twice in a script, directly reference the package rather than loading the whole library
+<br style="clear:both" />
+
+```{r, eval = FALSE}
+dplyr::filter(dfLong, year == 2016)
+```
+
+
+III. Data wrangling in the tidyverse: Rules of the road
+========================================================
+<br style="clear:both" />
+8) Delineate sections of script
+<br style="clear:both" />
+
+```{r, eval = FALSE}
+#---------------------------------------------------------*
+# ---- SET-UP ----
+#---------------------------------------------------------*
+
+# Load libraries:
+
+library(tidyverse)
+library(stringr)
+library(lubridate)
+
+```
+
+III. Data wrangling in the tidyverse: Rules of the road
+========================================================
+
+1) Start with raw data and DO NOT store intermediate files*  
+2) DO NOT assign names to intermediate files in a script unless absolutely necessary    
+3) Provide a new line of script for each operation, connected by pipes
+4) Provide adequate commenting **above** operations
+5) Begin scripts with any necessary set-up
+6) Do not use setwd, but do remind yourself of your working directory!
+7) If an R package is only used once or twice in a script, directly reference the package
+8) Delineate sections of script
 
 IV. dplyr review
 ========================================================
@@ -681,7 +796,8 @@ Here we'll look at the functions:
 
 IV. String manipulation in stringr
 ========================================================
-*str_to_upper*
+
+*str_to_upper*: Make strings all upper case
 
 ```{r, echo = FALSE}
 sp <- dirtyBird$speciesEnc %>% unique
@@ -694,10 +810,71 @@ sp
 sp %>%
   str_to_upper %>%
   unique
-````
+```
 
 IV. String manipulation in stringr
 ========================================================
+
+*str_detect*: Detect a string within a value
+
+```{r}
+str_detect('hello world','hello')
+
+str_detect('hello world', 'foo')
+```
+
+IV. String manipulation in stringr
+========================================================
+
+*str_detect*: Detect a string within a value
+
+Using in conjunction with a filter:
+
+```{r, echo = FALSE}
+data('population')
+population <- population %>%
+  filter(year == max(year)) %>%
+  select(-year)
+knitr::kable(
+  head(population, 10)
+  )
+```
+
+IV. String manipulation in stringr
+========================================================
+
+*str_detect*: Detect a string within a value
+
+Using in conjunction with a filter:
+
+```{r}
+population %>%
+  filter(str_detect(country, 'United'))
+```
+
+IV. String manipulation in stringr
+========================================================
+
+*str_detect*: Detect a string within a value
+
+Using in conjunction with an ifelse statement:
+
+```{r, eval = FALSE}
+population %>%
+  mutate(
+    country = ifelse(str_detect(country, 'Al'),
+    'Shazam!', country)
+    )
+```
+
+```{r, echo = FALSE}
+population %>%
+  mutate(
+    country = ifelse(str_detect(country, 'Al'),
+    'Shazam!', country)
+    ) %>%
+  head(5)
+```
 
 IV. Combining data tables using join and bind
 ========================================================
