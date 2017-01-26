@@ -5,16 +5,6 @@ library(tidyverse)
 library(lubridate)
 library(stringr)
 
-# Goals today include:
-# 
-# 1) Reading in tibbles
-# 2) Manipulating strings using stringr
-# 3) Combining data tables using join and bind
-# 4) Working with dates
-# 5) Selecting fields (review)
-# 6) Subsetting with %in%
-# 7) Summarizing data (review and new)
-
 gitSite <- 'https://raw.githubusercontent.com/bsevansunc/rWorkshop/master/'
 
 dirtyBirdURL <- getURL(paste0(gitSite, 'dirtyBirdData','.csv'))
