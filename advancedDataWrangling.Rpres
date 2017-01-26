@@ -158,7 +158,6 @@ dfLong %>%
   tbl_df
 ```
 
-
 II. Tidyr review
 ========================================================
 <br style="clear:both" />
