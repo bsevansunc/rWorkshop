@@ -1,3 +1,7 @@
+#=================================================================================*
+# ---- SET-UP ----
+#=================================================================================*
+
 # Today's libraries:
 
 library(RCurl)
@@ -12,10 +16,6 @@ dirtyBirdURL <- getURL(paste0(gitSite, 'dirtyBirdData','.csv'))
 dirtyBandingURL <- getURL(paste0(gitSite, 'dirtyBandingData','.csv'))
 
 dirtyResightURL <- getURL(paste0(gitSite, 'dirtyResightData','.csv'))
-
-#=================================================================================*
-# ---- SET-UP ----
-#=================================================================================*
 
 # First, a better way to read files than read.csv:
 
