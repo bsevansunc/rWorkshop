@@ -184,7 +184,6 @@ read_csv(dataFrame.csv)
 6       C  2017  31.3
 ```
 
-
 II. Tidyr review
 ========================================================
 <br style="clear:both" />
