@@ -10,34 +10,18 @@ R Workshop: Data management in R
 Brian S Evans  
 Migratory Bird Center 
 
-
 Goals of this lesson
-========================================================
-
-- Don't be a **dirty data** maker!
-- Introduction to the tidyverse
-- Manipulating strings using stringr  
-- Combining data tables using join and bind  
-- Working with dates  
-- Selecting fields (review)  
-- Subsetting with %in%  
-- Summarizing data (review and new)  
-
-I. Rules of the road for tidy data 
 ========================================================
 <img style="float: right; width:330px; height:330px; margin: 0px 10px 10px 0px;" src="https://pbs.twimg.com/profile_images/677589103710306304/m56O6Wgf.jpg">
 
-- Tidy data are easy to:
-  - Manipulate
-  - Summarize
-  - Analyze
-- Understanding dirty vs. clean data is key
-
-I. Rules of the road for tidy data
-========================================================
-<br style="clear:both" />
-
-**Dirty:**
+- Introduction to the tidyverse
+- tidyR and dplyr review
+- Don't be a **dirty data** maker!
+- Manipulating strings using stringr  
+- Joining data
+- Working with dates  
+- Selecting fields (review)  
+- Subsetting with %in%  
 
 ```{r, echo = FALSE}
 library(RCurl)
@@ -67,10 +51,161 @@ dfWide <- data.frame(
   mass2016 = c(13.2, 14.6, 27.1),
   mass2017 = c(26.4, 15.2, 31.3)
 )
+
+dfLong <- dfWide %>%
+  gather(key = year,
+         value = value,
+         mass2016:mass2017) %>%
+  mutate(year = str_replace_all(year, 'mass', ''))
+
+```
+
+I. The tidyverse: Tibbles and pipes oh my!
+========================================================
+![alt text](http://tidyr.tidyverse.org/logo.png)
+![alt text](http://stringr.tidyverse.org/logo.png)
+![alt text](http://readr.tidyverse.org/logo.png)
+
+```{r, eval = FALSE}
+install.packages('tidyverse')
+install.packages('stringr')
+install.packages('lubridate')
+```
+
+I. The tidyverse: Tibbles and pipes oh my!
+========================================================
+
+**A typical data frame**:  
+```{r, echo = FALSE}
+dfLong
+```
+
+I. The tidyverse: Tibbles and pipes oh my!
+========================================================
+
+**Summary data on a typical data frame**:  
+```{r}
+class(dfLong$subject)
+str(dfLong)
+```
+
+I. The tidyverse: Tibbles and pipes oh my!
+========================================================
+
+**Summary data on a typical data frame**:  
+```{r}
+nrow(dfLong)
+ncol(dfLong)
+dim(dfLong)
+```
+
+I. The tidyverse: Tibbles and pipes oh my!
+========================================================
+
+**Tibbles**:  
+- Show a reduced number of rows and columns, if necessary  
+- Provide the dimensions of the data table
+- Provide the class of fields in a data frame
+
+```{r, echo = FALSE}
+dfLong %>% tbl_df
+dataFrame <- dfLong
+```
+
+I. The tidyverse: Tibbles and pipes oh my!
+========================================================
+<img style="float: right; margin: 0px 15px 15px 0px;" src="http://revolution-computing.typepad.com/.a/6a010534b1db25970b01a3fd380b67970b-600wi">
+
+The **Pipe operator (%>%)** allows you to pass output from an argument on the left to an argument on the right without assigning a name or nesting functions. 
+
+For example, we can make use the _tbl_df_ function and a _pipe_ to turn a regular data frame to a tibble:
+
+<br style="clear:both" />
+
+```{r, eval = FALSE}
+dataFrame %>%
+  tbl_df
+```
+
+I. The tidyverse: Tibbles and pipes oh my!
+========================================================
+
+<img style="float: right; margin: 0px 15px 15px 0px;" src="http://revolution-computing.typepad.com/.a/6a010534b1db25970b01a3fd380b67970b-600wi">
+
+The **Pipe operator (%>%)** allows you to pass output from an argument on the left to an argument on the right without assigning a name or nesting functions. 
+
+For example, we can make use the _tbl_df_ function and a _pipe_ to turn a regular data frame to a tibble:
+
+<br style="clear:both" />
+
+```{r, eval = FALSE}
+dataFrame %>%
+  tbl_df
+```
+
+Note the convention to start a new line after each pipe. This is to make your code more readable.
+
+I. The tidyverse: Tibbles and pipes oh my!
+========================================================
+We can read a data table into R directly as a tibble using the **readr** function _read_csv_. 
+
+```{r, eval = FALSE}
+read_csv(dataFrame.csv)
+```
+
+```{r, echo = FALSE}
+dfLong %>% 
+  tbl_df
+```
+
+
+II. Tidyr review
+========================================================
+<br style="clear:both" />
+**tidyr** provides functions for tidying dirty data, including:
+
+- _gather_: Convert wide to long data frame
+- _separate_: Separate one column to several
+- _arrange_: Order rows by a column
+
+III. dplyr review
+========================================================
+<br style="clear:both" />
+**dplyr** provides us with key data wrangling functions.  
+Some of the most important of these functions are:
+
+- _rename_: Rename columns of a data frame
+- _filter_: Subset rows in a data table using logical conditions  
+- _select_: Subset columns in a data table  
+- _mutate_: Compute and apppend a new column to a data table  
+- _mutate_all_: Apply a computation to all columns in a data table
+- _bind_rows_: Bind the rows of two data tables together
+- _group_by_: Group rows of data by some grouping variable  
+- _summarize_: Calculate summary information for groups
+
+<br style="clear:both" />
+
+IV. Rules of the road for tidy data 
+========================================================
+<img style="float: right; width:330px; height:330px; margin: 0px 10px 10px 0px;" src="https://pbs.twimg.com/profile_images/677589103710306304/m56O6Wgf.jpg">
+
+- Tidy data are easy to:
+  - Manipulate
+  - Summarize
+  - Analyze
+- Understanding dirty vs. clean data is key
+
+IV. Rules of the road for tidy data 
+========================================================
+<br style="clear:both" />
+
+**Dirty:**
+
+```{r, echo = FALSE}
 knitr::kable(dfWide)
 ```
 
-I. Rules of the road for tidy data
+IV. Rules of the road for tidy data 
 ========================================================
 <br style="clear:both" />
 
@@ -80,7 +215,7 @@ I. Rules of the road for tidy data
 knitr::kable(dfWide)
 ```
 
-I. Rules of the road for tidy data
+IV. Rules of the road for tidy data 
 ========================================================
 <br style="clear:both" />
 
@@ -89,15 +224,10 @@ I. Rules of the road for tidy data
 **Tidy (long format):**
 
 ```{r, echo = FALSE}
-dfLong <- dfWide %>%
-  gather(key = year,
-         value = value,
-         mass2016:mass2017) %>%
-  mutate(year = str_replace_all(year, 'mass', ''))
 knitr::kable(dfLong)
 ```
 
-I. Rules of the road for tidy data
+IV. Rules of the road for tidy data 
 ========================================================
 
 <br style="clear:both" />
@@ -112,34 +242,8 @@ knitr::kable(
 )
 ```
 
-I. Rules of the road for tidy data
+IV. Rules of the road for tidy data 
 ========================================================
-<br style="clear:both" />
-
-2) One level of observation per table
-
-**Tidy:**
-```{r echo=FALSE, comment="", fig.height = 800, fig.width = 1200}
-# library(gridExtra)
-# library(grid)
-# 
-# t1 <- dfLong %>%
-#     mutate(site = c(1,1,2,1,1,2))
-# 
-# t2 <- data.frame(
-#     site = c(1,2),
-#     canopy = c(13.3,26.8)
-#     )
-#   
-# grid.arrange(tableGrob(t1, rows = NULL),
-#              tableGrob(t2, rows = NULL),
-#              ncol=2, heights = c(30,30))
-```
-
-I. Rules of the road for tidy data
-========================================================
-
-<br style="clear:both" />
 
 2) One level of observation per table
 
@@ -150,7 +254,7 @@ knitr::kable(
   dfLong %>%
     mutate(site = c(1,1,2,1,1,2))
 )
-````
+```
 
 ```{r, echo = FALSE}
 knitr::kable(
@@ -161,7 +265,7 @@ knitr::kable(
 )
 ```
 
-I. Rules of the road for tidy data
+IV. Rules of the road for tidy data 
 ========================================================
 
 <br style="clear:both" />
@@ -188,26 +292,7 @@ t2
 #     sep = '')
 ```
 
-```{r, results='asis', echo = FALSE, fig.align='right'}
-t1 <- knitr::kable(
-  dfLong %>%
-    filter(year == 2016),
-  output = FALSE
-)
-
-t2 <- knitr::kable(
-  dfLong %>%
-    filter(year == 2017),
-  output = FALSE
-)
-
-t2
-
-# cat(c('<table><tr valign="top"><td>', t1, '</td><td>', t2, '</td><tr></table>'),
-#     sep = '')
-```
-
-I. Rules of the road for tidy data
+IV. Rules of the road for tidy data 
 ========================================================
 <br style="clear:both" />
 
@@ -221,7 +306,7 @@ knitr::kable(
 )
 ```
 
-I. Rules of the road for tidy data
+IV. Rules of the road for tidy data 
 ========================================================
 <br style="clear:both" />
 
@@ -236,7 +321,7 @@ knitr::kable(
 )
 ```
 
-I. Rules of the road for tidy data
+IV. Rules of the road for tidy data 
 ========================================================
 <br style="clear:both" />
 
@@ -252,7 +337,7 @@ knitr::kable(dfLong %>%
 )
 ```
 
-I. Rules of the road for tidy data
+IV. Rules of the road for tidy data 
 ========================================================
 <br style="clear:both" />
 
@@ -269,7 +354,7 @@ knitr::kable(
 )
 ```
 
-I. Rules of the road for tidy data
+IV. Rules of the road for tidy data 
 ========================================================
 <br style="clear:both" />
 5) One data value per field
@@ -286,7 +371,7 @@ knitr::kable(
 )
 ```
 
-I. Rules of the road for tidy data
+IV. Rules of the road for tidy data 
 ========================================================
 <img style="float: right; width:330px; height:330px; margin: 0px 0px 0px 0px;" src="https://pbs.twimg.com/profile_images/677589103710306304/m56O6Wgf.jpg">
 
@@ -296,138 +381,12 @@ I. Rules of the road for tidy data
 4. No derived variables!  
 5. One data value per field
 
-II. Tidyr review
-========================================================
-<br style="clear:both" />
-Tidyr provides functions for tidying dirty data, including:
 
-- _gather_: Convert wide to long data frame
-- _separate_: Separate one column to several
-- _arrange_: Order rows by a column
-
-**Exercise: Tidy dirty data
-
-III. The tidyverse: Tibbles and pipes oh my!
-========================================================
-![alt text](http://tidyr.tidyverse.org/logo.png)
-![alt text](http://stringr.tidyverse.org/logo.png)
-![alt text](http://readr.tidyverse.org/logo.png)
-
-```{r, eval = FALSE}
-install.packages('tidyverse')
-install.packages('stringr')
-install.packages('lubridate')
-````
-
-III. The tidyverse: Tibbles and pipes oh my!
-========================================================
-
-**A typical data frame**:  
-```{r, echo = FALSE}
-dfLong
-````
-
-III. The tidyverse: Tibbles and pipes oh my!
-========================================================
-
-**Metadata on a typical data frame**:  
-```{r}
-class(dfLong$subject)
-str(dfLong)
-````
-
-III. The tidyverse: Tibbles and pipes oh my!
-========================================================
-
-**Metadata on a typical data frame**:  
-```{r}
-nrow(dfLong)
-ncol(dfLong)
-dim(dfLong)
-````
-
-III. The tidyverse: Tibbles and pipes oh my!
-========================================================
-
-**Tibbles**:  
-- Show a reduced number of rows and columns, if necessary  
-- Provide the dimensions of the data table
-- Provide the class of fields in a data frame
-
-```{r, echo = FALSE}
-dfLong %>% tbl_df
-dataFrame <- dfLong
-````
-
-III. The tidyverse: Tibbles and pipes oh my!
-========================================================
-<img style="float: right; margin: 0px 15px 15px 0px;" src="http://revolution-computing.typepad.com/.a/6a010534b1db25970b01a3fd380b67970b-600wi">
-
-The **Pipe operator (%>%)** allows you to pass output from an argument on the left to an argument on the right without assigning a name or nesting functions. 
-
-For example, we can make use the _tbl_df_ function and a _pipe_ to turn a regular data frame to a tibble:
-
-<br style="clear:both" />
-
-```{r, eval = FALSE}
-dataFrame %>%
-  tbl_df
-```
-
-III. The tidyverse: Tibbles and pipes oh my!
-========================================================
-
-<img style="float: right; margin: 0px 15px 15px 0px;" src="http://revolution-computing.typepad.com/.a/6a010534b1db25970b01a3fd380b67970b-600wi">
-
-The **Pipe operator (%>%)** allows you to pass output from an argument on the left to an argument on the right without assigning a name or nesting functions. 
-
-For example, we can make use the _tbl_df_ function and a _pipe_ to turn a regular data frame to a tibble:
-
-<br style="clear:both" />
-
-```{r, eval = FALSE}
-dataFrame %>%
-  tbl_df
-```
-
-Note the convention to start a new line after each pipe. This is to make your code more readable.
-
-III. The tidyverse: Tibbles and pipes oh my!
-========================================================
-We can read a data table into R directly as a tibble using the **readr** function _read_csv_. 
-
-```{r, eval = FALSE}
-read_csv(dataFrame.csv)
-```
-
-```{r, echo = FALSE}
-dfLong %>% tbl_df
-```
-
-IV. dplyr review
-========================================================
-<br style="clear:both" />
-
-In addition to pipes, dplyr provides us with key data wrangling functions.  
-Some of the most important of these functions are:
-
-- _rename_: Rename columns of a data frame
-- _filter_: Subset rows in a data table using logical conditions  
-- _select_: Subset columns in a data table  
-- _mutate_: Compute and apppend a new column to a data table  
-- _mutate_all_: Apply a computation to all columns in a data table  
-- _group_by_: Group rows of data by some grouping variable  
-- _summarize_: Calculate summary information for groups
-
-<br style="clear:both" />
-
-**Let's use read_csv to load the data for today's workshop!**
-
-IV. Data wrangling in the tidyverse: Rules of wrangling
+V. Data wrangling in the tidyverse: Rules of wrangling
 ========================================================
 <img style="float: center; width:900px; height:700px; margin: 0px 0px 0px 0px;" src="http://www.phdcomics.com/comics/archive/phd052810s.gif">
 
-IV. Data wrangling in the tidyverse: Rules of wrangling
+V. Data wrangling in the tidyverse: Rules of wrangling
 ========================================================
 <br style="clear:both" />
 1) Start with raw data and DO NOT store intermediate files*  
@@ -444,7 +403,7 @@ dfLong2016A <- filter(read_csv('dfLong2016.csv'), subject == 'A')
 write_csv(dfLong2016A, 'dfLong2016A.csv')
 ```
 
-IV. Data wrangling in the tidyverse: Rules of wrangling
+V. Data wrangling in the tidyverse: Rules of wrangling
 ========================================================
 <br style="clear:both" />
 2) DO NOT assign names to intermediate files in a script unless absolutely necessary    
@@ -459,7 +418,7 @@ dfLong2016A <- filter(dfLong2016, subject == 'A')
 dfLong2016A
 ```
 
-IV. Data wrangling in the tidyverse: Rules of wrangling
+V. Data wrangling in the tidyverse: Rules of wrangling
 ========================================================
 <br style="clear:both" />
 1) Start with raw data and DO NOT store intermediate files*  
@@ -476,7 +435,7 @@ dfLong %>%
     )
 ```
 
-IV. Data wrangling in the tidyverse: Rules of wrangling
+V. Data wrangling in the tidyverse: Rules of wrangling
 ========================================================
 <br style="clear:both" />
 3) Provide a new line of script for each operation, connected by pipes   
@@ -494,7 +453,7 @@ dfLong %>%
   mutate(state = 'ridiculous')
 ```
 
-IV. Data wrangling in the tidyverse: Rules of wrangling
+V. Data wrangling in the tidyverse: Rules of wrangling
 ========================================================
 <br style="clear:both" />
 4) Provide adequate commenting **above** operations
@@ -511,7 +470,7 @@ dfLong %>%
     )
 ```
 
-IV. Data wrangling in the tidyverse: Rules of wrangling
+V. Data wrangling in the tidyverse: Rules of wrangling
 ========================================================
 <br style="clear:both" />
 5) Begin scripts with any necessary set-up and arrange scripts in ordered sections  
@@ -531,7 +490,7 @@ library(lubridate)
 dfLong <- read_csv('dfLong.csv')
 ```
 
-IV. Data wrangling in the tidyverse: Rules of wrangling
+V. Data wrangling in the tidyverse: Rules of wrangling
 ========================================================
 <br style="clear:both" />
 6) Do not use _setwd_ in your script, but do remind yourself of your working directory!
@@ -547,7 +506,7 @@ setwd('C:/Users/Brian/Desktop/gits/rWorkshop')
 # my working directory: C:/Users/Brian/Desktop/gits/rWorkshop
 ```
 
-IV. Data wrangling in the tidyverse: Rules of wrangling
+V. Data wrangling in the tidyverse: Rules of wrangling
 ========================================================
 <br style="clear:both" />
 7) If an R package is only used once or twice in a script, directly reference the package rather than loading the whole library
@@ -558,7 +517,7 @@ dplyr::filter(dfLong, year == 2016)
 ```
 
 
-IV. Data wrangling in the tidyverse: Rules of wrangling
+V. Data wrangling in the tidyverse: Rules of wrangling
 ========================================================
 <br style="clear:both" />
 8) Delineate sections of script
@@ -577,7 +536,7 @@ library(lubridate)
 
 ```
 
-IV. Data wrangling in the tidyverse: Rules of wrangling
+V. Data wrangling in the tidyverse: Rules of wrangling
 ========================================================
 
 1) Start with raw data and DO NOT store intermediate files*  
@@ -589,7 +548,7 @@ IV. Data wrangling in the tidyverse: Rules of wrangling
 7) If an R package is only used once or twice in a script, directly reference the package  
 8) Delineate sections of script  
 
-V. String manipulation in stringr
+VI. String manipulation in stringr
 ========================================================
 <img style="float: left; margin: 0px 15px 15px 0px;" src="http://www.catster.com/wp-content/uploads/2015/06/cat_with_string.jpg">
 
@@ -603,7 +562,7 @@ Here we'll look at the functions:
 - *str_replace_all*: Replace characters in a string
 - *str_sub*: Extract part of a string by position
 
-V. String manipulation in stringr
+VI. String manipulation in stringr
 ========================================================
 
 *str_to_upper*: Make strings all upper case
@@ -621,7 +580,7 @@ sp %>%
   unique
 ```
 
-V. String manipulation in stringr
+VI. String manipulation in stringr
 ========================================================
 
 *str_detect*: Detect a string within a value
@@ -632,7 +591,7 @@ str_detect('hello world','hello')
 str_detect('hello world', 'foo')
 ```
 
-V. String manipulation in stringr
+VI. String manipulation in stringr
 ========================================================
 
 *str_detect*: Detect a string within a value
@@ -649,7 +608,7 @@ knitr::kable(
   )
 ```
 
-V. String manipulation in stringr
+VI. String manipulation in stringr
 ========================================================
 
 *str_detect*: Detect a string within a value
@@ -661,7 +620,7 @@ population %>%
   filter(str_detect(country, 'United'))
 ```
 
-V. String manipulation in stringr
+VI. String manipulation in stringr
 ========================================================
 
 *str_detect*: Detect a string within a value
@@ -685,15 +644,15 @@ population %>%
   head(5)
 ```
 
-V. Combining data tables using join and bind
+VI. String manipulation in stringr
 ========================================================
 
-VI. Working with dates
+VII. Working with dates
 ========================================================
 
-VII. Subsetting with %in%
+VIII. Subsetting with %in%
 ========================================================
 
-IX. Summarizing data
+IX. Joining data
 ========================================================
 
