@@ -88,14 +88,119 @@ wideFrame %>%
            sep = '_') %>%
   arrange(desc(subject))
 
+# NOW YOU: Load the following dirty data frame, make it long (removing NA's),
+# use separate to clean the values, and arrange by date (ascending):
+
+tidyExercise <- readWorkshopData('tidyExercise')
+
 #=================================================================================*
 # ---- DPLYR REVIEW ----
 #=================================================================================*
 
-# Read the data:
+dplyrReview <- readWorkshopData('dplyrReview')
 
-dirtyBird <- readWorkshopData('dirtyBirdData')
+dplyrReview
 
-dirtyBanding <- readWorkshopData('dirtyBandingData')
+# rename: Rename columns of a data frame
 
-dirtyResight <- readWorkshopData('dirtyResightData')
+dplyrReview %>%
+  rename(date = date.Of.Encounter,
+         encounterType = ENCOUNTER.TYPE)
+
+# filter: Subset rows in a data table using logical conditions  
+
+dplyrReview %>%
+  rename(date = date.Of.Encounter,
+         encounterType = ENCOUNTER.TYPE) %>%
+  filter(encounterType == 'Band') %>%
+  filter(sex != 'U') %>%
+  filter(age != 'HY', sex == 'F')
+
+# filter ... using %in%
+
+dplyrReview %>%
+  rename(date = date.Of.Encounter,
+         encounterType = ENCOUNTER.TYPE) %>%
+  filter(age %in% c('AHY','ASY', 'SY', 'AHY\t','ASH'))
+
+dplyrReview %>%
+  rename(date = date.Of.Encounter,
+         encounterType = ENCOUNTER.TYPE) %>%
+  filter(!(age %in% c('U', 'UNK', 'HY')))
+  
+# select: Subset columns in a data table  
+
+dplyrReview %>%
+  rename(date = date.Of.Encounter,
+         encounterType = ENCOUNTER.TYPE) %>%
+  filter(encounterType == 'Band') %>%
+  filter(sex != 'U') %>%
+  filter(age != 'HY', sex == 'F') %>%
+  select(bandNumber, fat:tarsus) %>%
+  select(-c(fat, tarsus))
+
+# left_join: Bind data tables by common columns
+
+dirtyBirds <- readWorkshopData('dirtyBirdData')
+
+dplyrReview %>%
+  rename(date = date.Of.Encounter,
+         encounterType = ENCOUNTER.TYPE) %>%
+  filter(encounterType == 'Band',
+         age != 'HY', sex == 'F') %>%
+  select(bandNumber, mass:tl) %>%
+  left_join(dirtyBirds, by = 'bandNumber')
+
+# bind_cols: Bind the rows of columns of data tables together by position
+
+dataLeft <-
+  
+dataRight <-
+  
+bind_cols(dataLeft, dataRight)
+
+# bind_rows: Bind the rows of two data tables together by position
+
+dataTop <- 
+  
+dataBottom <-
+  
+bind_rows(dataTop, dataBottom)
+
+# mutate: Compute and append a new column to a data table
+
+dplyrReview %>%
+  rename(date = date.Of.Encounter,
+         encounterType = ENCOUNTER.TYPE) %>%
+  filter(encounterType == 'Band',
+         age != 'HY', sex == 'F') %>%
+  select(bandNumber, mass:tl) %>%
+  left_join(dirtyBirds, by = 'bandNumber') %>%
+  mutate(mass = as.numeric(mass))
+
+# mutate_all: Apply a computation to all columns in a data table:
+
+dplyrReviewClean <- dplyrReview %>%
+  rename(date = date.Of.Encounter,
+         encounterType = ENCOUNTER.TYPE) %>%
+  filter(encounterType == 'Band',
+         age != 'HY', sex == 'F') %>%
+  select(bandNumber, mass:tl) %>%
+  left_join(dirtyBirds, by = 'bandNumber')
+
+dplyrReviewClean %>%
+  select(mass, wing, tl) %>%
+  mutate_all(as.numeric)
+
+## Next: bind_cols with bandNumber, species.
+
+dplyrReviewClean %>%
+  select(mass, wing, tl) %>%
+  mutate_all(as.numeric)
+
+# group_by: Group rows of data by some grouping variable
+
+# summarize: Calculate summary information for groups
+
+
+
