@@ -6,7 +6,7 @@ autosize: true
 transition: none
 width: 1400
 
-R Workshop: Data management in R  
+Smithsonian R Workshop: Data management in R  
 Brian S Evans  
 Migratory Bird Center 
 
@@ -16,12 +16,9 @@ Goals of this lesson
 
 - Introduction to the tidyverse
 - tidyR and dplyr review
-- Don't be a **dirty data** maker!
+- Tidy data
+- Data wrangling in the tidyverse
 - Manipulating strings using stringr  
-- Joining data
-- Working with dates  
-- Selecting fields (review)  
-- Subsetting with %in%  
 
 
 
@@ -196,15 +193,16 @@ II. Tidyr review
 III. dplyr review
 ========================================================
 <br style="clear:both" />
-**dplyr** provides us with key data wrangling functions.  
-Some of the most important of these functions are:
+**dplyr** provides us with key data wrangling functions, including:  
 
 - _rename_: Rename columns of a data frame
 - _filter_: Subset rows in a data table using logical conditions  
 - _select_: Subset columns in a data table  
+- _left_join_: Bind data tables by common columns
+- _bind_cols_: Bind the columns of two data tables together by position
+- _bind_rows_: Bind the rows of two data tables together by position
 - _mutate_: Compute and apppend a new column to a data table  
 - _mutate_all_: Apply a computation to all columns in a data table
-- _bind_rows_: Bind the rows of two data tables together
 - _group_by_: Group rows of data by some grouping variable  
 - _summarize_: Calculate summary information for groups
 
@@ -257,42 +255,9 @@ IV. Rules of the road for tidy data
 ========================================================
 <br style="clear:both" />
 
-**Dirty (wide format):**
-
-<table>
- <thead>
-  <tr>
-   <th style="text-align:left;"> subject </th>
-   <th style="text-align:right;"> mass2016 </th>
-   <th style="text-align:right;"> mass2017 </th>
-  </tr>
- </thead>
-<tbody>
-  <tr>
-   <td style="text-align:left;"> A </td>
-   <td style="text-align:right;"> 13.2 </td>
-   <td style="text-align:right;"> 26.4 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> B </td>
-   <td style="text-align:right;"> 14.6 </td>
-   <td style="text-align:right;"> 15.2 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> C </td>
-   <td style="text-align:right;"> 27.1 </td>
-   <td style="text-align:right;"> 31.3 </td>
-  </tr>
-</tbody>
-</table>
-
-IV. Rules of the road for tidy data 
-========================================================
-<br style="clear:both" />
-
 1) Store all data in long format  
 
-**Tidy (long format):**
+**Tidy (tidyr::gather):**
 
 <table>
  <thead>
@@ -404,7 +369,7 @@ IV. Rules of the road for tidy data
 
 2) One level of observation per table
 
-**Tidy:**
+**Tidy (dplyr::select):**
 
 <table>
  <thead>
@@ -479,7 +444,7 @@ IV. Rules of the road for tidy data
 
 <br style="clear:both" />
 
-**Tidy:**
+**Dirty:**
 
 <table>
  <thead>
@@ -541,7 +506,7 @@ IV. Rules of the road for tidy data
 
 3) One table per level of observation
 
-**Tidy:**
+**Tidy (dplyr::left_join):**
 
 <table>
  <thead>
@@ -646,7 +611,7 @@ IV. Rules of the road for tidy data
 
 4) No derived variables!
 
-**Tidy:**
+**Tidy (dplyr::select):**
 
 <table>
  <thead>
@@ -743,7 +708,7 @@ IV. Rules of the road for tidy data
 <br style="clear:both" />
 5) One data value per field
 
-**Tidy:**
+**Tidy (tidyr::separate):**
 
 <table>
  <thead>
@@ -758,41 +723,91 @@ IV. Rules of the road for tidy data
   <tr>
    <td style="text-align:left;"> A </td>
    <td style="text-align:left;"> 2016 </td>
-   <td style="text-align:left;"> m </td>
+   <td style="text-align:left;"> m_ </td>
    <td style="text-align:right;"> 13.2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> B </td>
    <td style="text-align:left;"> 2016 </td>
-   <td style="text-align:left;"> f </td>
+   <td style="text-align:left;"> f_ </td>
    <td style="text-align:right;"> 14.6 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> C </td>
    <td style="text-align:left;"> 2016 </td>
-   <td style="text-align:left;"> f </td>
+   <td style="text-align:left;"> f_ </td>
    <td style="text-align:right;"> 27.1 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> A </td>
    <td style="text-align:left;"> 2017 </td>
-   <td style="text-align:left;"> m </td>
+   <td style="text-align:left;"> m_ </td>
    <td style="text-align:right;"> 26.4 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> B </td>
    <td style="text-align:left;"> 2017 </td>
-   <td style="text-align:left;"> f </td>
+   <td style="text-align:left;"> f_ </td>
    <td style="text-align:right;"> 15.2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> C </td>
    <td style="text-align:left;"> 2017 </td>
-   <td style="text-align:left;"> f </td>
+   <td style="text-align:left;"> f_ </td>
    <td style="text-align:right;"> 31.3 </td>
   </tr>
 </tbody>
 </table>
+
+IV. Rules of the road for tidy data 
+========================================================
+<br style="clear:both" />
+6) Always use the international date standard (ISO 8601)
+
+
+```r
+badDate <- '5/16/2016'
+
+goodDate <- as.Date(badDate, '%m/%d/%Y')
+
+goodDate
+```
+
+```
+[1] "2016-05-16"
+```
+
+IV. Rules of the road for tidy data 
+========================================================
+<br style="clear:both" />
+6) Always use the international date standard (ISO 8601)
+
+
+```r
+month(goodDate)
+```
+
+```
+[1] 5
+```
+
+```r
+year(goodDate)
+```
+
+```
+[1] 2016
+```
+
+```r
+yday(goodDate)
+```
+
+```
+[1] 137
+```
+
+**Task:** Filter our dplyr tibble to records from 2015
 
 IV. Rules of the road for tidy data 
 ========================================================
@@ -803,6 +818,7 @@ IV. Rules of the road for tidy data
 3. One table per level of observation  
 4. No derived variables!  
 5. One data value per field
+6. Always use the international date standard
 
 
 V. Data wrangling in the tidyverse: Rules of wrangling
@@ -1022,6 +1038,8 @@ sp %>%
  [1] "NOCA" "BCCH" "GRCA" "SOSP" "HOWR" "AMRO" "CARW" "NOMO" "EAPH" "RBWO"
 ```
 
+**Task:** Change all of the species in our dplyr tibble to upper case
+
 VI. String manipulation in stringr
 ========================================================
 
@@ -1043,6 +1061,8 @@ str_detect('hello world', 'foo')
 ```
 [1] FALSE
 ```
+
+
 
 VI. String manipulation in stringr
 ========================================================
@@ -1153,15 +1173,93 @@ population %>%
 5        Andorra      79218
 ```
 
+**Task:** Use str_detect to subset the data to bandNumbers that include "\t"
+
 VI. String manipulation in stringr
 ========================================================
 
-VII. Working with dates
+*str_trim*: Remove white space from a string
+
+
+```r
+messyString <- c('apples ', ' oranges', 'bananas\t')
+
+str_trim(messyString)
+```
+
+```
+[1] "apples"  "oranges" "bananas"
+```
+
+VI. String manipulation in stringr
 ========================================================
 
-VIII. Subsetting with %in%
+*str_replace_all*: Replace characters in a string
+
+
+```r
+messyString <- c('apples112', ' oranges358', 'bananas13')
+
+str_replace_all(messyString, 'apples', 'helloWorld')
+```
+
+```
+[1] "helloWorld112" " oranges358"   "bananas13"    
+```
+
+```r
+str_replace_all(messyString, '[a-z]', '')
+```
+
+```
+[1] "112"  " 358" "13"  
+```
+
+```r
+str_replace_all(messyString, '[0-9]', '')
+```
+
+```
+[1] "apples"   " oranges" "bananas" 
+```
+
+VI. String manipulation in stringr
 ========================================================
 
-IX. Joining data
+*str_sub*: Extract part of a string by position
+
+
+```r
+messyString <- c('apples', 'oranges', 'bananas')
+
+str_sub(messyString, start = -3)
+```
+
+```
+[1] "les" "ges" "nas"
+```
+
+```r
+str_sub(messyString, start  = 3)
+```
+
+```
+[1] "ples"  "anges" "nanas"
+```
+
+```r
+str_sub(messyString, end = -3)
+```
+
+```
+[1] "appl"  "orang" "banan"
+```
+
+VI. String manipulation in stringr
 ========================================================
+
+**Task:** There are lots of problems with the band numbers in the file we've been using. Clean them using stringr!
+<br style="clear:both" />
+
+<img style="margin: 0px 15px 15px 0px; width:600px; height:500px;" src="http://www.catster.com/wp-content/uploads/2015/06/cat_with_string.jpg">
 

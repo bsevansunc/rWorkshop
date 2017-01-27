@@ -6,7 +6,7 @@ autosize: true
 transition: none
 width: 1400
 
-R Workshop: Data management in R  
+Smithsonian R Workshop: Data management in R  
 Brian S Evans  
 Migratory Bird Center 
 
@@ -16,12 +16,9 @@ Goals of this lesson
 
 - Introduction to the tidyverse
 - tidyR and dplyr review
-- Don't be a **dirty data** maker!
+- Tidy data
+- Data wrangling in the tidyverse
 - Manipulating strings using stringr  
-- Joining data
-- Working with dates  
-- Selecting fields (review)  
-- Subsetting with %in%  
 
 ```{r, echo = FALSE}
 library(RCurl)
@@ -170,15 +167,16 @@ II. Tidyr review
 III. dplyr review
 ========================================================
 <br style="clear:both" />
-**dplyr** provides us with key data wrangling functions.  
-Some of the most important of these functions are:
+**dplyr** provides us with key data wrangling functions, including:  
 
 - _rename_: Rename columns of a data frame
 - _filter_: Subset rows in a data table using logical conditions  
 - _select_: Subset columns in a data table  
+- _left_join_: Bind data tables by common columns
+- _bind_cols_: Bind the columns of two data tables together by position
+- _bind_rows_: Bind the rows of two data tables together by position
 - _mutate_: Compute and apppend a new column to a data table  
 - _mutate_all_: Apply a computation to all columns in a data table
-- _bind_rows_: Bind the rows of two data tables together
 - _group_by_: Group rows of data by some grouping variable  
 - _summarize_: Calculate summary information for groups
 
@@ -208,19 +206,9 @@ IV. Rules of the road for tidy data
 ========================================================
 <br style="clear:both" />
 
-**Dirty (wide format):**
-
-```{r, echo = FALSE}
-knitr::kable(dfWide)
-```
-
-IV. Rules of the road for tidy data 
-========================================================
-<br style="clear:both" />
-
 1) Store all data in long format  
 
-**Tidy (long format):**
+**Tidy (tidyr::gather):**
 
 ```{r, echo = FALSE}
 knitr::kable(dfLong)
@@ -246,7 +234,7 @@ IV. Rules of the road for tidy data
 
 2) One level of observation per table
 
-**Tidy:**
+**Tidy (dplyr::select):**
 
 ```{r, echo = FALSE}
 knitr::kable(
@@ -269,7 +257,7 @@ IV. Rules of the road for tidy data
 
 <br style="clear:both" />
 
-**Tidy:**
+**Dirty:**
 
 ```{r, results='asis', echo = FALSE, fig.align='left'}
 t1 <- knitr::kable(
@@ -297,7 +285,7 @@ IV. Rules of the road for tidy data
 
 3) One table per level of observation
 
-**Tidy:**
+**Tidy (dplyr::left_join):**
 
 ```{r, echo = FALSE}
 knitr::kable(
@@ -326,7 +314,7 @@ IV. Rules of the road for tidy data
 
 4) No derived variables!
 
-**Tidy:**
+**Tidy (dplyr::select):**
 
 ```{r, echo = FALSE}
 knitr::kable(dfLong %>%
@@ -358,17 +346,43 @@ IV. Rules of the road for tidy data
 <br style="clear:both" />
 5) One data value per field
 
-**Tidy:**
+**Tidy (tidyr::separate):**
 
 ```{r, echo = FALSE}
 knitr::kable(
   dfLong %>%
     mutate(date = c('2016-06-12', '2016-06-17','2016-07-01',
                     '2017-06-14','2017-06-18','2017-06-29')) %>%
-    mutate(sex = rep(c('m', 'f', 'f'),2)) %>%
+    mutate(sex = rep(c('m_', 'f_', 'f_'),2)) %>%
     select(subject, year, sex, value)
 )
 ```
+
+IV. Rules of the road for tidy data 
+========================================================
+<br style="clear:both" />
+6) Always use the international date standard (ISO 8601)
+
+```{r}
+badDate <- '5/16/2016'
+
+goodDate <- as.Date(badDate, '%m/%d/%Y')
+
+goodDate
+```
+
+IV. Rules of the road for tidy data 
+========================================================
+<br style="clear:both" />
+6) Always use the international date standard (ISO 8601)
+
+```{r}
+month(goodDate)
+year(goodDate)
+yday(goodDate)
+```
+
+**Task:** Filter our dplyr tibble to records from 2015
 
 IV. Rules of the road for tidy data 
 ========================================================
@@ -379,6 +393,7 @@ IV. Rules of the road for tidy data
 3. One table per level of observation  
 4. No derived variables!  
 5. One data value per field
+6. Always use the international date standard
 
 
 V. Data wrangling in the tidyverse: Rules of wrangling
@@ -579,6 +594,8 @@ sp %>%
   unique
 ```
 
+**Task:** Change all of the species in our dplyr tibble to upper case
+
 VI. String manipulation in stringr
 ========================================================
 
@@ -589,6 +606,8 @@ str_detect('hello world','hello')
 
 str_detect('hello world', 'foo')
 ```
+
+
 
 VI. String manipulation in stringr
 ========================================================
@@ -643,15 +662,57 @@ population %>%
   head(5)
 ```
 
+**Task:** Use str_detect to subset the data to bandNumbers that include "\t"
+
 VI. String manipulation in stringr
 ========================================================
 
-VII. Working with dates
+*str_trim*: Remove white space from a string
+
+```{r}
+messyString <- c('apples ', ' oranges', 'bananas\t')
+
+str_trim(messyString)
+
+```
+
+VI. String manipulation in stringr
 ========================================================
 
-VIII. Subsetting with %in%
+*str_replace_all*: Replace characters in a string
+
+```{r}
+messyString <- c('apples112', ' oranges358', 'bananas13')
+
+str_replace_all(messyString, 'apples', 'helloWorld')
+
+str_replace_all(messyString, '[a-z]', '')
+
+str_replace_all(messyString, '[0-9]', '')
+
+```
+
+VI. String manipulation in stringr
 ========================================================
 
-IX. Joining data
+*str_sub*: Extract part of a string by position
+
+```{r}
+messyString <- c('apples', 'oranges', 'bananas')
+
+str_sub(messyString, start = -3)
+
+str_sub(messyString, start  = 3)
+
+str_sub(messyString, end = -3)
+
+```
+
+VI. String manipulation in stringr
 ========================================================
+
+**Task:** There are lots of problems with the band numbers in the file we've been using. Clean them using stringr!
+<br style="clear:both" />
+
+<img style="margin: 0px 15px 15px 0px; width:600px; height:500px;" src="http://www.catster.com/wp-content/uploads/2015/06/cat_with_string.jpg">
 

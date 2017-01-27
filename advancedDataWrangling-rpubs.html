@@ -752,6 +752,9 @@ hljs.initHighlightingOnLoad();
 <h1>Advanced data wrangling</h1><p></p>
 
 <div class="slideContent" >
+<p>Smithsonian R Workshop: Data management in R<br/>
+Brian S Evans<br/>
+Migratory Bird Center </p>
 
 </div>
 
@@ -759,472 +762,21 @@ hljs.initHighlightingOnLoad();
 <section data-transition="none" data-transition-speed="default">
 <h3>Goals of this lesson</h3>
 <div class="slideContent" >
+<p><img style="float: right; width:330px; height:330px; margin: 0px 10px 10px 0px;" src="https://pbs.twimg.com/profile_images/677589103710306304/m56O6Wgf.jpg"></p>
+
 <ul>
-<li>Don&#39;t be a <strong>dirty data</strong> maker!</li>
 <li>Introduction to the tidyverse</li>
-<li>Reading in tibbles<br/></li>
+<li>tidyR and dplyr review</li>
+<li>Tidy data</li>
+<li>Data wrangling in the tidyverse</li>
 <li>Manipulating strings using stringr<br/></li>
-<li>Combining data tables using join and bind<br/></li>
-<li>Working with dates<br/></li>
-<li>Selecting fields (review)<br/></li>
-<li>Subsetting with %in%<br/></li>
-<li>Summarizing data (review and new)<br/></li>
 </ul>
 
 </div>
 
 </section>
-<section data-state="section" data-transition="none" data-transition-speed="default">
-<h2>I. Rules of the road for tidy data</h2>
-<div class="slideContent" >
-<p>1) Store all data in long format<br/>
-2) One table for each level of observation<br/>
-3) Always start with raw data &hellip; no derived variables!<br/>
-4) One data value per field  </p>
-
-</div>
-
-</section>
 <section data-transition="none" data-transition-speed="default">
-<h3>I. Rules of the road for tidy data</h3>
-<div class="slideContent" >
-<p>1) Store all data in long format  </p>
-
-<p><strong>Wide format data:</strong></p>
-
-<table><thead>
-<tr>
-<th align="left">subject</th>
-<th align="right">mass2016</th>
-<th align="right">mass2017</th>
-</tr>
-</thead><tbody>
-<tr>
-<td align="left">A</td>
-<td align="right">13.2</td>
-<td align="right">26.4</td>
-</tr>
-<tr>
-<td align="left">B</td>
-<td align="right">14.6</td>
-<td align="right">15.2</td>
-</tr>
-<tr>
-<td align="left">C</td>
-<td align="right">27.1</td>
-<td align="right">31.3</td>
-</tr>
-</tbody></table>
-
-</div>
-
-</section>
-<section data-transition="none" data-transition-speed="default">
-<h3>I. Rules of the road for tidy data</h3>
-<div class="slideContent" >
-<p>1) Store all data in long format</p>
-
-<p><strong>Long format data:</strong></p>
-
-<table><thead>
-<tr>
-<th align="left">subject</th>
-<th align="left">year</th>
-<th align="right">value</th>
-</tr>
-</thead><tbody>
-<tr>
-<td align="left">A</td>
-<td align="left">2016</td>
-<td align="right">13.2</td>
-</tr>
-<tr>
-<td align="left">B</td>
-<td align="left">2016</td>
-<td align="right">14.6</td>
-</tr>
-<tr>
-<td align="left">C</td>
-<td align="left">2016</td>
-<td align="right">27.1</td>
-</tr>
-<tr>
-<td align="left">A</td>
-<td align="left">2017</td>
-<td align="right">26.4</td>
-</tr>
-<tr>
-<td align="left">B</td>
-<td align="left">2017</td>
-<td align="right">15.2</td>
-</tr>
-<tr>
-<td align="left">C</td>
-<td align="left">2017</td>
-<td align="right">31.3</td>
-</tr>
-</tbody></table>
-
-</div>
-
-</section>
-<section data-transition="none" data-transition-speed="default">
-<h3>I. Rules of the road for tidy data</h3>
-<div class="slideContent" >
-<p>2) One table for each level of observation</p>
-
-<p><strong>Don&#39;t do this:</strong></p>
-
-<table><thead>
-<tr>
-<th align="left">subject</th>
-<th align="left">year</th>
-<th align="right">value</th>
-<th align="right">site</th>
-<th align="right">canopy</th>
-<th align="right">precip</th>
-</tr>
-</thead><tbody>
-<tr>
-<td align="left">A</td>
-<td align="left">2016</td>
-<td align="right">13.2</td>
-<td align="right">1</td>
-<td align="right">13.3</td>
-<td align="right">91.7</td>
-</tr>
-<tr>
-<td align="left">B</td>
-<td align="left">2016</td>
-<td align="right">14.6</td>
-<td align="right">1</td>
-<td align="right">13.3</td>
-<td align="right">91.7</td>
-</tr>
-<tr>
-<td align="left">C</td>
-<td align="left">2016</td>
-<td align="right">27.1</td>
-<td align="right">2</td>
-<td align="right">26.8</td>
-<td align="right">78.1</td>
-</tr>
-<tr>
-<td align="left">A</td>
-<td align="left">2017</td>
-<td align="right">26.4</td>
-<td align="right">1</td>
-<td align="right">13.3</td>
-<td align="right">91.7</td>
-</tr>
-<tr>
-<td align="left">B</td>
-<td align="left">2017</td>
-<td align="right">15.2</td>
-<td align="right">1</td>
-<td align="right">13.3</td>
-<td align="right">91.7</td>
-</tr>
-<tr>
-<td align="left">C</td>
-<td align="left">2017</td>
-<td align="right">31.3</td>
-<td align="right">2</td>
-<td align="right">26.8</td>
-<td align="right">78.1</td>
-</tr>
-</tbody></table>
-
-</div>
-
-</section>
-<section data-transition="none" data-transition-speed="default">
-<h3>I. Rules of the road for tidy data</h3>
-<div class="slideContent" >
-<p>2) One table for each level of observation</p>
-
-<p><strong>Do this:</strong></p>
-
-<table><thead>
-<tr>
-<th align="left">subject</th>
-<th align="left">year</th>
-<th align="right">value</th>
-<th align="right">site</th>
-</tr>
-</thead><tbody>
-<tr>
-<td align="left">A</td>
-<td align="left">2016</td>
-<td align="right">13.2</td>
-<td align="right">1</td>
-</tr>
-<tr>
-<td align="left">B</td>
-<td align="left">2016</td>
-<td align="right">14.6</td>
-<td align="right">1</td>
-</tr>
-<tr>
-<td align="left">C</td>
-<td align="left">2016</td>
-<td align="right">27.1</td>
-<td align="right">2</td>
-</tr>
-<tr>
-<td align="left">A</td>
-<td align="left">2017</td>
-<td align="right">26.4</td>
-<td align="right">1</td>
-</tr>
-<tr>
-<td align="left">B</td>
-<td align="left">2017</td>
-<td align="right">15.2</td>
-<td align="right">1</td>
-</tr>
-<tr>
-<td align="left">C</td>
-<td align="left">2017</td>
-<td align="right">31.3</td>
-<td align="right">2</td>
-</tr>
-</tbody></table>
-
-<table><thead>
-<tr>
-<th align="right">site</th>
-<th align="right">canopy</th>
-<th align="right">precip</th>
-</tr>
-</thead><tbody>
-<tr>
-<td align="right">1</td>
-<td align="right">13.3</td>
-<td align="right">91.7</td>
-</tr>
-<tr>
-<td align="right">2</td>
-<td align="right">26.8</td>
-<td align="right">78.1</td>
-</tr>
-</tbody></table>
-
-</div>
-
-</section>
-<section data-transition="none" data-transition-speed="default">
-<h3>I. Rules of the road for tidy data</h3>
-<div class="slideContent" >
-<p>3) Always start with raw data &hellip; no derived variables!</p>
-
-<p><strong>Don&#39;t do this:</strong></p>
-
-<table><thead>
-<tr>
-<th align="left">subject</th>
-<th align="left">date</th>
-<th align="left">year</th>
-<th align="right">value</th>
-</tr>
-</thead><tbody>
-<tr>
-<td align="left">A</td>
-<td align="left">2016-06-12</td>
-<td align="left">2016</td>
-<td align="right">13.2</td>
-</tr>
-<tr>
-<td align="left">B</td>
-<td align="left">2016-06-17</td>
-<td align="left">2016</td>
-<td align="right">14.6</td>
-</tr>
-<tr>
-<td align="left">C</td>
-<td align="left">2016-07-01</td>
-<td align="left">2016</td>
-<td align="right">27.1</td>
-</tr>
-<tr>
-<td align="left">A</td>
-<td align="left">2017-06-14</td>
-<td align="left">2017</td>
-<td align="right">26.4</td>
-</tr>
-<tr>
-<td align="left">B</td>
-<td align="left">2017-06-18</td>
-<td align="left">2017</td>
-<td align="right">15.2</td>
-</tr>
-<tr>
-<td align="left">C</td>
-<td align="left">2017-06-29</td>
-<td align="left">2017</td>
-<td align="right">31.3</td>
-</tr>
-</tbody></table>
-
-</div>
-
-</section>
-<section data-transition="none" data-transition-speed="default">
-<h3>I. Rules of the road for tidy data</h3>
-<div class="slideContent" >
-<p>3) Always start with raw data &hellip; no derived variables!</p>
-
-<p><strong>Do this:</strong></p>
-
-<table><thead>
-<tr>
-<th align="left">subject</th>
-<th align="left">date</th>
-<th align="right">value</th>
-</tr>
-</thead><tbody>
-<tr>
-<td align="left">A</td>
-<td align="left">2016-06-12</td>
-<td align="right">13.2</td>
-</tr>
-<tr>
-<td align="left">B</td>
-<td align="left">2016-06-17</td>
-<td align="right">14.6</td>
-</tr>
-<tr>
-<td align="left">C</td>
-<td align="left">2016-07-01</td>
-<td align="right">27.1</td>
-</tr>
-<tr>
-<td align="left">A</td>
-<td align="left">2017-06-14</td>
-<td align="right">26.4</td>
-</tr>
-<tr>
-<td align="left">B</td>
-<td align="left">2017-06-18</td>
-<td align="right">15.2</td>
-</tr>
-<tr>
-<td align="left">C</td>
-<td align="left">2017-06-29</td>
-<td align="right">31.3</td>
-</tr>
-</tbody></table>
-
-</div>
-
-</section>
-<section data-transition="none" data-transition-speed="default">
-<h3>I. Rules of the road for tidy data</h3>
-<div class="slideContent" >
-<p>4) One data value per field</p>
-
-<p><strong>Don&#39;t do this:</strong></p>
-
-<table><thead>
-<tr>
-<th align="left">subject</th>
-<th align="right">value</th>
-<th align="left">sexYear</th>
-</tr>
-</thead><tbody>
-<tr>
-<td align="left">A</td>
-<td align="right">13.2</td>
-<td align="left">m2016</td>
-</tr>
-<tr>
-<td align="left">B</td>
-<td align="right">14.6</td>
-<td align="left">f2016</td>
-</tr>
-<tr>
-<td align="left">C</td>
-<td align="right">27.1</td>
-<td align="left">f2016</td>
-</tr>
-<tr>
-<td align="left">A</td>
-<td align="right">26.4</td>
-<td align="left">m2017</td>
-</tr>
-<tr>
-<td align="left">B</td>
-<td align="right">15.2</td>
-<td align="left">f2017</td>
-</tr>
-<tr>
-<td align="left">C</td>
-<td align="right">31.3</td>
-<td align="left">f2017</td>
-</tr>
-</tbody></table>
-
-</div>
-
-</section>
-<section data-transition="none" data-transition-speed="default">
-<h3>I. Rules of the road for tidy data</h3>
-<div class="slideContent" >
-<p>4) One data value per field</p>
-
-<p><strong>Don&#39;t do this:</strong></p>
-
-<table><thead>
-<tr>
-<th align="left">subject</th>
-<th align="left">year</th>
-<th align="right">value</th>
-<th align="left">sexYear</th>
-</tr>
-</thead><tbody>
-<tr>
-<td align="left">A</td>
-<td align="left">2016</td>
-<td align="right">13.2</td>
-<td align="left">m</td>
-</tr>
-<tr>
-<td align="left">B</td>
-<td align="left">2016</td>
-<td align="right">14.6</td>
-<td align="left">f</td>
-</tr>
-<tr>
-<td align="left">C</td>
-<td align="left">2016</td>
-<td align="right">27.1</td>
-<td align="left">f</td>
-</tr>
-<tr>
-<td align="left">A</td>
-<td align="left">2017</td>
-<td align="right">26.4</td>
-<td align="left">m</td>
-</tr>
-<tr>
-<td align="left">B</td>
-<td align="left">2017</td>
-<td align="right">15.2</td>
-<td align="left">f</td>
-</tr>
-<tr>
-<td align="left">C</td>
-<td align="left">2017</td>
-<td align="right">31.3</td>
-<td align="left">f</td>
-</tr>
-</tbody></table>
-
-</div>
-
-</section>
-<section data-transition="none" data-transition-speed="default">
-<h3>II. The tidyverse: Tibbles and pipes oh my!</h3>
+<h3>I. The tidyverse: Tibbles and pipes oh my!</h3>
 <div class="slideContent" >
 <p><img src="http://tidyr.tidyverse.org/logo.png" alt="alt text"/>
 <img src="http://stringr.tidyverse.org/logo.png" alt="alt text"/>
@@ -1239,16 +791,9 @@ install.packages(&#39;lubridate&#39;)
 
 </section>
 <section data-transition="none" data-transition-speed="default">
-<h3>II. The tidyverse: Tibbles and pipes oh my!</h3>
+<h3>I. The tidyverse: Tibbles and pipes oh my!</h3>
 <div class="slideContent" >
-<p><strong>Tibbles</strong>:  </p>
-
-<ul>
-<li>Show a maximum of 10 rows for long data tables</li>
-<li>Show a reduced number of columns, if necessary</li>
-<li>Provide the dimensions of the data table</li>
-<li>Provide the class of fields in a data frame</li>
-</ul>
+<p><strong>A typical data frame</strong>:  </p>
 
 <pre><code>  subject year value
 1       A 2016  13.2
@@ -1263,13 +808,61 @@ install.packages(&#39;lubridate&#39;)
 
 </section>
 <section data-transition="none" data-transition-speed="default">
-<h3>II. The tidyverse: Tibbles and pipes oh my!</h3>
+<h3>I. The tidyverse: Tibbles and pipes oh my!</h3>
+<div class="slideContent" >
+<p><strong>Summary data on a typical data frame</strong>:  </p>
+
+<pre><code class="r">class(dfLong$subject)
+</code></pre>
+
+<pre><code>[1] &quot;factor&quot;
+</code></pre>
+
+<pre><code class="r">str(dfLong)
+</code></pre>
+
+<pre><code>&#39;data.frame&#39;:   6 obs. of  3 variables:
+ $ subject: Factor w/ 3 levels &quot;A&quot;,&quot;B&quot;,&quot;C&quot;: 1 2 3 1 2 3
+ $ year   : chr  &quot;2016&quot; &quot;2016&quot; &quot;2016&quot; &quot;2017&quot; ...
+ $ value  : num  13.2 14.6 27.1 26.4 15.2 31.3
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>I. The tidyverse: Tibbles and pipes oh my!</h3>
+<div class="slideContent" >
+<p><strong>Summary data on a typical data frame</strong>:  </p>
+
+<pre><code class="r">nrow(dfLong)
+</code></pre>
+
+<pre><code>[1] 6
+</code></pre>
+
+<pre><code class="r">ncol(dfLong)
+</code></pre>
+
+<pre><code>[1] 3
+</code></pre>
+
+<pre><code class="r">dim(dfLong)
+</code></pre>
+
+<pre><code>[1] 6 3
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>I. The tidyverse: Tibbles and pipes oh my!</h3>
 <div class="slideContent" >
 <p><strong>Tibbles</strong>:  </p>
 
 <ul>
-<li>Show a maximum of 10 rows for long data tables</li>
-<li>Show a reduced number of columns, if necessary</li>
+<li>Show a reduced number of rows and columns, if necessary<br/></li>
 <li>Provide the dimensions of the data table</li>
 <li>Provide the class of fields in a data frame</li>
 </ul>
@@ -1289,24 +882,49 @@ install.packages(&#39;lubridate&#39;)
 
 </section>
 <section data-transition="none" data-transition-speed="default">
-<h3>II. The tidyverse: Tibbles and pipes oh my!</h3>
+<h3>I. The tidyverse: Tibbles and pipes oh my!</h3>
 <div class="slideContent" >
-<p><strong>Tibbles</strong>:  </p>
+<p><img style="float: right; margin: 0px 15px 15px 0px;" src="http://revolution-computing.typepad.com/.a/6a010534b1db25970b01a3fd380b67970b-600wi"></p>
 
-<ul>
-<li>Show a maximum of 10 rows for long data tables</li>
-<li>Show a reduced number of columns, if necessary</li>
-<li>Provide the dimensions of the data table</li>
-<li>Provide the class of fields in a data frame</li>
-</ul>
+<p>The <strong>Pipe operator (%&gt;%)</strong> allows you to pass output from an argument on the left to an argument on the right without assigning a name or nesting functions. </p>
 
-<pre><code>  subject year value
-1       A 2016  13.2
-2       B 2016  14.6
-3       C 2016  27.1
-4       A 2017  26.4
-5       B 2017  15.2
-6       C 2017  31.3
+<p>For example, we can make use the <em>tbl_df</em> function and a <em>pipe</em> to turn a regular data frame to a tibble:</p>
+
+<p><br style="clear:both" /></p>
+
+<pre><code class="r">dataFrame %&gt;%
+  tbl_df
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>I. The tidyverse: Tibbles and pipes oh my!</h3>
+<div class="slideContent" >
+<p><img style="float: right; margin: 0px 15px 15px 0px;" src="http://revolution-computing.typepad.com/.a/6a010534b1db25970b01a3fd380b67970b-600wi"></p>
+
+<p>The <strong>Pipe operator (%&gt;%)</strong> allows you to pass output from an argument on the left to an argument on the right without assigning a name or nesting functions. </p>
+
+<p>For example, we can make use the <em>tbl_df</em> function and a <em>pipe</em> to turn a regular data frame to a tibble:</p>
+
+<p><br style="clear:both" /></p>
+
+<pre><code class="r">dataFrame %&gt;%
+  tbl_df
+</code></pre>
+
+<p>Note the convention to start a new line after each pipe. This is to make your code more readable.</p>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>I. The tidyverse: Tibbles and pipes oh my!</h3>
+<div class="slideContent" >
+<p>We can read a data table into R directly as a tibble using the <strong>readr</strong> function <em>read_csv</em>. </p>
+
+<pre><code class="r">read_csv(dataFrame.csv)
 </code></pre>
 
 <pre><code># A tibble: 6 × 3
@@ -1324,69 +942,1163 @@ install.packages(&#39;lubridate&#39;)
 
 </section>
 <section data-transition="none" data-transition-speed="default">
-<h3>II. The tidyverse: Tibbles and pipes oh my!</h3>
+<h3>II. Tidyr review</h3>
 <div class="slideContent" >
-<p>The <strong>Pipe operator (%&gt;%)</strong> allows you to pass output from an argument to another argument without assigning a name or nesting functions. </p>
-
-<p>For example, we can make use the <em>tbl_df</em> function and a <em>pipe</em> to turn a regular data frame to a tibble:</p>
-
-<pre><code class="r">dataFrame %&gt;%
-  tbl_df
-</code></pre>
-
-</div>
-
-</section>
-<section data-transition="none" data-transition-speed="default">
-<h3>II. The tidyverse: Tibbles and pipes oh my!</h3>
-<div class="slideContent" >
-<p>The <strong>Pipe operator (%&gt;%)</strong> allows you to pass output from an argument to another argument without assigning a name or nesting functions. </p>
-
-<p>For example, we can make use the <em>tbl_df</em> function and a <em>pipe</em> to turn a regular data frame to a tibble:</p>
-
-<pre><code class="r">dataFrame %&gt;%
-  tbl_df
-</code></pre>
-
-<p>Note the convention to start a new line after each pipe. This is to make your code more readible.</p>
-
-</div>
-
-</section>
-<section data-transition="none" data-transition-speed="default">
-<h3>IV. The tidyverse: Tibbles and pipes oh my!</h3>
-<div class="slideContent" >
-<p>We can read a data table into R directly as a tibble using the <strong>readr</strong> function <em>read_csv</em>. For today&#39;s work, we will read in files from GitHub. To do so, we will use the package RCurl to read in the data from the web.</p>
-
-<pre><code class="r"># Get URL for website:
-gitSite &lt;- &#39;https://raw.githubusercontent.com/bsevansunc/rWorkshop/master/&#39;
-
-# Paste URL to the file names:
-
-dirtyBirdURL &lt;- getURL(paste0(gitSite, &#39;dirtyBirdData&#39;,&#39;.csv&#39;))
-
-dirtyBandingURL &lt;- getURL(paste0(gitSite, &#39;dirtyBandingData&#39;,&#39;.csv&#39;))
-
-dirtyResightURL &lt;- getURL(paste0(gitSite, &#39;dirtyResightData&#39;,&#39;.csv&#39;))
-
-# Read in the tibbles:
-
-dirtyBird &lt;- read_csv(dirtyBirdURL)
-
-dirtyBanding &lt;- read_csv(dirtyBandingURL)
-
-dirtyResight &lt;- read_csv(dirtyResightURL)
-</code></pre>
+<p><br style="clear:both" />
+<strong>tidyr</strong> provides functions for tidying dirty data, including:</p>
 
 <ul>
-<li>Reading in tibbles<br/></li>
-<li>Manipulating strings using stringr<br/></li>
-<li>Combining data tables using join and bind<br/></li>
-<li>Working with dates<br/></li>
-<li>Selecting fields (review)<br/></li>
-<li>Subsetting with %in%<br/></li>
-<li>Summarizing data (review and new)<br/></li>
+<li><em>gather</em>: Convert wide to long data frame</li>
+<li><em>separate</em>: Separate one column to several</li>
+<li><em>arrange</em>: Order rows by a column</li>
 </ul>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>III. dplyr review</h3>
+<div class="slideContent" >
+<p><br style="clear:both" />
+<strong>dplyr</strong> provides us with key data wrangling functions, including:  </p>
+
+<ul>
+<li><em>rename</em>: Rename columns of a data frame</li>
+<li><em>filter</em>: Subset rows in a data table using logical conditions<br/></li>
+<li><em>select</em>: Subset columns in a data table<br/></li>
+<li><em>left_join</em>: Bind data tables by common columns</li>
+<li><em>bind_cols</em>: Bind the columns of two data tables together by position</li>
+<li><em>bind_rows</em>: Bind the rows of two data tables together by position</li>
+<li><em>mutate</em>: Compute and apppend a new column to a data table<br/></li>
+<li><em>mutate_all</em>: Apply a computation to all columns in a data table</li>
+<li><em>group_by</em>: Group rows of data by some grouping variable<br/></li>
+<li><em>summarize</em>: Calculate summary information for groups</li>
+</ul>
+
+<p><br style="clear:both" /></p>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>IV. Rules of the road for tidy data </h3>
+<div class="slideContent" >
+<p><img style="float: right; width:330px; height:330px; margin: 0px 10px 10px 0px;" src="https://pbs.twimg.com/profile_images/677589103710306304/m56O6Wgf.jpg"></p>
+
+<ul>
+<li>Tidy data are easy to:
+
+<ul>
+<li>Manipulate</li>
+<li>Summarize</li>
+<li>Analyze</li>
+</ul></li>
+<li>Understanding dirty vs. clean data is key</li>
+</ul>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>IV. Rules of the road for tidy data </h3>
+<div class="slideContent" >
+<p><br style="clear:both" /></p>
+
+<p><strong>Dirty:</strong></p>
+
+<table>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> subject </th>
+   <th style="text-align:right;"> mass2016 </th>
+   <th style="text-align:right;"> mass2017 </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:right;"> 13.2 </td>
+   <td style="text-align:right;"> 26.4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> B </td>
+   <td style="text-align:right;"> 14.6 </td>
+   <td style="text-align:right;"> 15.2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> C </td>
+   <td style="text-align:right;"> 27.1 </td>
+   <td style="text-align:right;"> 31.3 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>IV. Rules of the road for tidy data </h3>
+<div class="slideContent" >
+<p><br style="clear:both" /></p>
+
+<p>1) Store all data in long format  </p>
+
+<p><strong>Tidy (tidyr::gather):</strong></p>
+
+<table>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> subject </th>
+   <th style="text-align:left;"> year </th>
+   <th style="text-align:right;"> value </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> 2016 </td>
+   <td style="text-align:right;"> 13.2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> B </td>
+   <td style="text-align:left;"> 2016 </td>
+   <td style="text-align:right;"> 14.6 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> C </td>
+   <td style="text-align:left;"> 2016 </td>
+   <td style="text-align:right;"> 27.1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> 2017 </td>
+   <td style="text-align:right;"> 26.4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> B </td>
+   <td style="text-align:left;"> 2017 </td>
+   <td style="text-align:right;"> 15.2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> C </td>
+   <td style="text-align:left;"> 2017 </td>
+   <td style="text-align:right;"> 31.3 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>IV. Rules of the road for tidy data </h3>
+<div class="slideContent" >
+<p><br style="clear:both" /></p>
+
+<p><strong>Dirty:</strong></p>
+
+<table>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> subject </th>
+   <th style="text-align:left;"> year </th>
+   <th style="text-align:right;"> value </th>
+   <th style="text-align:right;"> site </th>
+   <th style="text-align:right;"> canopy </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> 2016 </td>
+   <td style="text-align:right;"> 13.2 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 13.3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> B </td>
+   <td style="text-align:left;"> 2016 </td>
+   <td style="text-align:right;"> 14.6 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 13.3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> C </td>
+   <td style="text-align:left;"> 2016 </td>
+   <td style="text-align:right;"> 27.1 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 26.8 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> 2017 </td>
+   <td style="text-align:right;"> 26.4 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 13.3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> B </td>
+   <td style="text-align:left;"> 2017 </td>
+   <td style="text-align:right;"> 15.2 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 13.3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> C </td>
+   <td style="text-align:left;"> 2017 </td>
+   <td style="text-align:right;"> 31.3 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 26.8 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>IV. Rules of the road for tidy data </h3>
+<div class="slideContent" >
+<p>2) One level of observation per table</p>
+
+<p><strong>Tidy (dplyr::select):</strong></p>
+
+<table>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> subject </th>
+   <th style="text-align:left;"> year </th>
+   <th style="text-align:right;"> value </th>
+   <th style="text-align:right;"> site </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> 2016 </td>
+   <td style="text-align:right;"> 13.2 </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> B </td>
+   <td style="text-align:left;"> 2016 </td>
+   <td style="text-align:right;"> 14.6 </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> C </td>
+   <td style="text-align:left;"> 2016 </td>
+   <td style="text-align:right;"> 27.1 </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> 2017 </td>
+   <td style="text-align:right;"> 26.4 </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> B </td>
+   <td style="text-align:left;"> 2017 </td>
+   <td style="text-align:right;"> 15.2 </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> C </td>
+   <td style="text-align:left;"> 2017 </td>
+   <td style="text-align:right;"> 31.3 </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+</tbody>
+</table>
+
+<table>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> site </th>
+   <th style="text-align:right;"> canopy </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 13.3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 26.8 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>IV. Rules of the road for tidy data </h3>
+<div class="slideContent" >
+<p><br style="clear:both" /></p>
+
+<p><strong>Dirty:</strong></p>
+
+<table>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> subject </th>
+   <th style="text-align:left;"> year </th>
+   <th style="text-align:right;"> value </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> 2016 </td>
+   <td style="text-align:right;"> 13.2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> B </td>
+   <td style="text-align:left;"> 2016 </td>
+   <td style="text-align:right;"> 14.6 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> C </td>
+   <td style="text-align:left;"> 2016 </td>
+   <td style="text-align:right;"> 27.1 </td>
+  </tr>
+</tbody>
+</table>
+
+<table>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> subject </th>
+   <th style="text-align:left;"> year </th>
+   <th style="text-align:right;"> value </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> 2017 </td>
+   <td style="text-align:right;"> 26.4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> B </td>
+   <td style="text-align:left;"> 2017 </td>
+   <td style="text-align:right;"> 15.2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> C </td>
+   <td style="text-align:left;"> 2017 </td>
+   <td style="text-align:right;"> 31.3 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>IV. Rules of the road for tidy data </h3>
+<div class="slideContent" >
+<p><br style="clear:both" /></p>
+
+<p>3) One table per level of observation</p>
+
+<p><strong>Tidy (dplyr::left_join):</strong></p>
+
+<table>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> subject </th>
+   <th style="text-align:left;"> year </th>
+   <th style="text-align:right;"> value </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> 2016 </td>
+   <td style="text-align:right;"> 13.2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> B </td>
+   <td style="text-align:left;"> 2016 </td>
+   <td style="text-align:right;"> 14.6 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> C </td>
+   <td style="text-align:left;"> 2016 </td>
+   <td style="text-align:right;"> 27.1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> 2017 </td>
+   <td style="text-align:right;"> 26.4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> B </td>
+   <td style="text-align:left;"> 2017 </td>
+   <td style="text-align:right;"> 15.2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> C </td>
+   <td style="text-align:left;"> 2017 </td>
+   <td style="text-align:right;"> 31.3 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>IV. Rules of the road for tidy data </h3>
+<div class="slideContent" >
+<p><br style="clear:both" /></p>
+
+<p><strong>Dirty:</strong></p>
+
+<table>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> subject </th>
+   <th style="text-align:left;"> date </th>
+   <th style="text-align:left;"> year </th>
+   <th style="text-align:right;"> value </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> 2016-06-12 </td>
+   <td style="text-align:left;"> 2016 </td>
+   <td style="text-align:right;"> 13.2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> B </td>
+   <td style="text-align:left;"> 2016-06-17 </td>
+   <td style="text-align:left;"> 2016 </td>
+   <td style="text-align:right;"> 14.6 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> C </td>
+   <td style="text-align:left;"> 2016-07-01 </td>
+   <td style="text-align:left;"> 2016 </td>
+   <td style="text-align:right;"> 27.1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> 2017-06-14 </td>
+   <td style="text-align:left;"> 2017 </td>
+   <td style="text-align:right;"> 26.4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> B </td>
+   <td style="text-align:left;"> 2017-06-18 </td>
+   <td style="text-align:left;"> 2017 </td>
+   <td style="text-align:right;"> 15.2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> C </td>
+   <td style="text-align:left;"> 2017-06-29 </td>
+   <td style="text-align:left;"> 2017 </td>
+   <td style="text-align:right;"> 31.3 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>IV. Rules of the road for tidy data </h3>
+<div class="slideContent" >
+<p><br style="clear:both" /></p>
+
+<p>4) No derived variables!</p>
+
+<p><strong>Tidy (dplyr::select):</strong></p>
+
+<table>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> subject </th>
+   <th style="text-align:left;"> date </th>
+   <th style="text-align:right;"> value </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> 2016-06-12 </td>
+   <td style="text-align:right;"> 13.2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> B </td>
+   <td style="text-align:left;"> 2016-06-17 </td>
+   <td style="text-align:right;"> 14.6 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> C </td>
+   <td style="text-align:left;"> 2016-07-01 </td>
+   <td style="text-align:right;"> 27.1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> 2017-06-14 </td>
+   <td style="text-align:right;"> 26.4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> B </td>
+   <td style="text-align:left;"> 2017-06-18 </td>
+   <td style="text-align:right;"> 15.2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> C </td>
+   <td style="text-align:left;"> 2017-06-29 </td>
+   <td style="text-align:right;"> 31.3 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>IV. Rules of the road for tidy data </h3>
+<div class="slideContent" >
+<p><br style="clear:both" /></p>
+
+<p><strong>Dirty:</strong></p>
+
+<table>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> subject </th>
+   <th style="text-align:right;"> value </th>
+   <th style="text-align:left;"> sexYear </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:right;"> 13.2 </td>
+   <td style="text-align:left;"> m2016 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> B </td>
+   <td style="text-align:right;"> 14.6 </td>
+   <td style="text-align:left;"> f2016 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> C </td>
+   <td style="text-align:right;"> 27.1 </td>
+   <td style="text-align:left;"> f2016 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:right;"> 26.4 </td>
+   <td style="text-align:left;"> m2017 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> B </td>
+   <td style="text-align:right;"> 15.2 </td>
+   <td style="text-align:left;"> f2017 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> C </td>
+   <td style="text-align:right;"> 31.3 </td>
+   <td style="text-align:left;"> f2017 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>IV. Rules of the road for tidy data </h3>
+<div class="slideContent" >
+<p><br style="clear:both" />
+5) One data value per field</p>
+
+<p><strong>Tidy (tidyr::separate):</strong></p>
+
+<table>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> subject </th>
+   <th style="text-align:left;"> year </th>
+   <th style="text-align:left;"> sex </th>
+   <th style="text-align:right;"> value </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> 2016 </td>
+   <td style="text-align:left;"> m_ </td>
+   <td style="text-align:right;"> 13.2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> B </td>
+   <td style="text-align:left;"> 2016 </td>
+   <td style="text-align:left;"> f_ </td>
+   <td style="text-align:right;"> 14.6 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> C </td>
+   <td style="text-align:left;"> 2016 </td>
+   <td style="text-align:left;"> f_ </td>
+   <td style="text-align:right;"> 27.1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> 2017 </td>
+   <td style="text-align:left;"> m_ </td>
+   <td style="text-align:right;"> 26.4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> B </td>
+   <td style="text-align:left;"> 2017 </td>
+   <td style="text-align:left;"> f_ </td>
+   <td style="text-align:right;"> 15.2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> C </td>
+   <td style="text-align:left;"> 2017 </td>
+   <td style="text-align:left;"> f_ </td>
+   <td style="text-align:right;"> 31.3 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>IV. Rules of the road for tidy data </h3>
+<div class="slideContent" >
+<p><br style="clear:both" />
+6) Always use the international date standard (ISO 8601)</p>
+
+<pre><code class="r">badDate &lt;- &#39;5/16/2016&#39;
+
+goodDate &lt;- as.Date(badDate, &#39;%m/%d/%Y&#39;)
+
+goodDate
+</code></pre>
+
+<pre><code>[1] &quot;2016-05-16&quot;
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>IV. Rules of the road for tidy data </h3>
+<div class="slideContent" >
+<p><br style="clear:both" />
+6) Always use the international date standard (ISO 8601)</p>
+
+<pre><code class="r">month(goodDate)
+</code></pre>
+
+<pre><code>[1] 5
+</code></pre>
+
+<pre><code class="r">year(goodDate)
+</code></pre>
+
+<pre><code>[1] 2016
+</code></pre>
+
+<pre><code class="r">yday(goodDate)
+</code></pre>
+
+<pre><code>[1] 137
+</code></pre>
+
+<p><strong>Task:</strong> Filter our dplyr tibble to records from 2015</p>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>IV. Rules of the road for tidy data </h3>
+<div class="slideContent" >
+<p><img style="float: right; width:330px; height:330px; margin: 0px 0px 0px 0px;" src="https://pbs.twimg.com/profile_images/677589103710306304/m56O6Wgf.jpg"></p>
+
+<ol>
+<li>Store all data in long format<br/></li>
+<li>One level of observation per table<br/></li>
+<li>One table per level of observation<br/></li>
+<li>No derived variables!<br/></li>
+<li>One data value per field</li>
+<li>Always use the international date standard</li>
+</ol>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>V. Data wrangling in the tidyverse: Rules of wrangling</h3>
+<div class="slideContent" >
+<p><img style="float: center; width:900px; height:700px; margin: 0px 0px 0px 0px;" src="http://www.phdcomics.com/comics/archive/phd052810s.gif"></p>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>V. Data wrangling in the tidyverse: Rules of wrangling</h3>
+<div class="slideContent" >
+<p><br style="clear:both" />
+1) Start with raw data and DO NOT store intermediate files*<br/>
+<br style="clear:both" />
+<strong>Certainly do not do this:</strong></p>
+
+<pre><code class="r">dfLong2016 &lt;- filter(dfLong, year == 2016)
+
+write_csv(dfLong2016, &#39;dfLong2016.csv&#39;)
+
+dfLong2016A &lt;- filter(read_csv(&#39;dfLong2016.csv&#39;), subject == &#39;A&#39;)
+
+write_csv(dfLong2016A, &#39;dfLong2016A.csv&#39;)
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>V. Data wrangling in the tidyverse: Rules of wrangling</h3>
+<div class="slideContent" >
+<p><br style="clear:both" />
+2) DO NOT assign names to intermediate files in a script unless absolutely necessary<br/>
+<br style="clear:both" />
+<strong>Do not do this either:</strong></p>
+
+<pre><code class="r">dfLong2016 &lt;- filter(dfLong, year == 2016)
+
+dfLong2016A &lt;- filter(dfLong2016, subject == &#39;A&#39;)
+
+dfLong2016A
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>V. Data wrangling in the tidyverse: Rules of wrangling</h3>
+<div class="slideContent" >
+<p><br style="clear:both" />
+1) Start with raw data and DO NOT store intermediate files*<br/>
+2) DO NOT assign names to intermediate files in a script unless absolutely necessary<br/>
+<br style="clear:both" /></p>
+
+<p><strong>Do this:</strong></p>
+
+<pre><code class="r">dfLong %&gt;%
+  filter(
+    year == 2016,
+    subject == &#39;A&#39;
+    )
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>V. Data wrangling in the tidyverse: Rules of wrangling</h3>
+<div class="slideContent" >
+<p><br style="clear:both" />
+3) Provide a new line of script for each operation, connected by pipes<br/>
+<br style="clear:both" /></p>
+
+<p><strong>Do not do this:</strong></p>
+
+<pre><code class="r">dfLong %&gt;% filter(year == 2016) %&gt;% mutate(state = &#39;ridiculous&#39;)
+</code></pre>
+
+<p><strong>Do this:</strong></p>
+
+<pre><code class="r">dfLong %&gt;%
+  filter(year == 2016) %&gt;%
+  mutate(state = &#39;ridiculous&#39;)
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>V. Data wrangling in the tidyverse: Rules of wrangling</h3>
+<div class="slideContent" >
+<p><br style="clear:both" />
+4) Provide adequate commenting <strong>above</strong> operations
+<br style="clear:both" /></p>
+
+<pre><code class="r"># Filter by year and subject:
+
+dfLong %&gt;%
+  filter(
+    year == 2016,
+    subject == &#39;A&#39;
+    )
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>V. Data wrangling in the tidyverse: Rules of wrangling</h3>
+<div class="slideContent" >
+<p><br style="clear:both" />
+5) Begin scripts with any necessary set-up and arrange scripts in ordered sections<br/>
+(e.g., set-up, wrangling, analysis, figures)</p>
+
+<p><br style="clear:both" /></p>
+
+<pre><code class="r"># Load libraries:
+
+library(tidyverse)
+library(stringr)
+library(lubridate)
+
+# Get data:
+
+dfLong &lt;- read_csv(&#39;dfLong.csv&#39;)
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>V. Data wrangling in the tidyverse: Rules of wrangling</h3>
+<div class="slideContent" >
+<p><br style="clear:both" />
+6) Do not use <em>setwd</em> in your script, but do remind yourself of your working directory!
+<br style="clear:both" /></p>
+
+<p><strong>Do not do this this:</strong></p>
+
+<pre><code class="r">setwd(&#39;C:/Users/Brian/Desktop/gits/rWorkshop&#39;)
+</code></pre>
+
+<p><strong>Do this:</strong></p>
+
+<pre><code class="r"># my working directory: C:/Users/Brian/Desktop/gits/rWorkshop
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>V. Data wrangling in the tidyverse: Rules of wrangling</h3>
+<div class="slideContent" >
+<p><br style="clear:both" />
+7) If an R package is only used once or twice in a script, directly reference the package rather than loading the whole library
+<br style="clear:both" /></p>
+
+<pre><code class="r">dplyr::filter(dfLong, year == 2016)
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>V. Data wrangling in the tidyverse: Rules of wrangling</h3>
+<div class="slideContent" >
+<p><br style="clear:both" />
+8) Delineate sections of script
+<br style="clear:both" /></p>
+
+<pre><code class="r">#---------------------------------------------------------*
+# ---- SET-UP ----
+#---------------------------------------------------------*
+
+# Load libraries:
+
+library(tidyverse)
+library(stringr)
+library(lubridate)
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>V. Data wrangling in the tidyverse: Rules of wrangling</h3>
+<div class="slideContent" >
+<p>1) Start with raw data and DO NOT store intermediate files*<br/>
+2) DO NOT assign names to intermediate files in a script unless absolutely necessary<br/>
+3) Provide a new line of script for each operation, connected by pipes<br/>
+4) Provide adequate commenting <strong>above</strong> operations<br/>
+5) Begin scripts with any necessary set-up<br/>
+6) Do not use <em>setwd</em> in your script, but do remind yourself of your working directory!<br/>
+7) If an R package is only used once or twice in a script, directly reference the package<br/>
+8) Delineate sections of script  </p>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>VI. String manipulation in stringr</h3>
+<div class="slideContent" >
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="http://www.catster.com/wp-content/uploads/2015/06/cat_with_string.jpg"></p>
+
+<p>Manipulating strings is a common data task that <strong>stringr</strong> has greatly simplified.  </p>
+
+<p>Here we&#39;ll look at the functions:</p>
+
+<ul>
+<li><em>str_to_upper</em>: Make strings all upper case</li>
+<li><em>str_detect</em>: Detect a string within a value</li>
+<li><em>str_trim</em>: Remove white space from a string</li>
+<li><em>str_replace_all</em>: Replace characters in a string</li>
+<li><em>str_sub</em>: Extract part of a string by position</li>
+</ul>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>VI. String manipulation in stringr</h3>
+<div class="slideContent" >
+<p><em>str_to_upper</em>: Make strings all upper case</p>
+
+<pre><code class="r">sp
+</code></pre>
+
+<pre><code> [1] &quot;NOCA&quot; &quot;BCCH&quot; &quot;GRCA&quot; &quot;Sosp&quot; &quot;SOSP&quot; &quot;grca&quot; &quot;sosp&quot; &quot;Grca&quot; &quot;HOWR&quot; &quot;bcch&quot;
+[11] &quot;AMRO&quot; &quot;howr&quot; &quot;CARW&quot; &quot;noca&quot; &quot;amro&quot; &quot;NOMO&quot; &quot;Amro&quot; &quot;Carw&quot; &quot;carw&quot; &quot;EAPH&quot;
+[21] &quot;RBWO&quot;
+</code></pre>
+
+<pre><code class="r">sp %&gt;%
+  str_to_upper %&gt;%
+  unique
+</code></pre>
+
+<pre><code> [1] &quot;NOCA&quot; &quot;BCCH&quot; &quot;GRCA&quot; &quot;SOSP&quot; &quot;HOWR&quot; &quot;AMRO&quot; &quot;CARW&quot; &quot;NOMO&quot; &quot;EAPH&quot; &quot;RBWO&quot;
+</code></pre>
+
+<p><strong>Task:</strong> Change all of the species in our dplyr tibble to upper case</p>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>VI. String manipulation in stringr</h3>
+<div class="slideContent" >
+<p><em>str_detect</em>: Detect a string within a value</p>
+
+<pre><code class="r">str_detect(&#39;hello world&#39;,&#39;hello&#39;)
+</code></pre>
+
+<pre><code>[1] TRUE
+</code></pre>
+
+<pre><code class="r">str_detect(&#39;hello world&#39;, &#39;foo&#39;)
+</code></pre>
+
+<pre><code>[1] FALSE
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>VI. String manipulation in stringr</h3>
+<div class="slideContent" >
+<p><em>str_detect</em>: Detect a string within a value</p>
+
+<p>Using in conjunction with a filter:</p>
+
+<table>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> country </th>
+   <th style="text-align:right;"> population </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> Afghanistan </td>
+   <td style="text-align:right;"> 30551674 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Albania </td>
+   <td style="text-align:right;"> 3173271 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Algeria </td>
+   <td style="text-align:right;"> 39208194 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> American Samoa </td>
+   <td style="text-align:right;"> 55165 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Andorra </td>
+   <td style="text-align:right;"> 79218 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Angola </td>
+   <td style="text-align:right;"> 21471618 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Anguilla </td>
+   <td style="text-align:right;"> 14300 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Antigua and Barbuda </td>
+   <td style="text-align:right;"> 89985 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Argentina </td>
+   <td style="text-align:right;"> 41446246 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Armenia </td>
+   <td style="text-align:right;"> 2976566 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>VI. String manipulation in stringr</h3>
+<div class="slideContent" >
+<p><em>str_detect</em>: Detect a string within a value</p>
+
+<p>Using in conjunction with a filter:</p>
+
+<pre><code class="r">population %&gt;%
+  filter(str_detect(country, &#39;United&#39;))
+</code></pre>
+
+<pre><code># A tibble: 4 × 2
+                                               country population
+                                                 &lt;chr&gt;      &lt;int&gt;
+1                                 United Arab Emirates    9346129
+2 United Kingdom of Great Britain and Northern Ireland   63136265
+3                          United Republic of Tanzania   49253126
+4                             United States of America  320050716
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>VI. String manipulation in stringr</h3>
+<div class="slideContent" >
+<p><em>str_detect</em>: Detect a string within a value</p>
+
+<p>Using in conjunction with an ifelse statement:</p>
+
+<pre><code class="r">population %&gt;%
+  mutate(
+    country = ifelse(str_detect(country, &#39;Al&#39;),
+    &#39;Shazam!&#39;, country)
+    )
+</code></pre>
+
+<pre><code># A tibble: 5 × 2
+         country population
+           &lt;chr&gt;      &lt;int&gt;
+1    Afghanistan   30551674
+2        Shazam!    3173271
+3        Shazam!   39208194
+4 American Samoa      55165
+5        Andorra      79218
+</code></pre>
+
+<p><strong>Task:</strong> Use str_detect to subset the data to bandNumbers that include &ldquo;\t&rdquo;</p>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>VI. String manipulation in stringr</h3>
+<div class="slideContent" >
+<p><em>str_trim</em>: Remove white space from a string</p>
+
+<pre><code class="r">messyString &lt;- c(&#39;apples &#39;, &#39; oranges&#39;, &#39;bananas\t&#39;)
+
+str_trim(messyString)
+</code></pre>
+
+<pre><code>[1] &quot;apples&quot;  &quot;oranges&quot; &quot;bananas&quot;
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>VI. String manipulation in stringr</h3>
+<div class="slideContent" >
+<p><em>str_replace_all</em>: Replace characters in a string</p>
+
+<pre><code class="r">messyString &lt;- c(&#39;apples112&#39;, &#39; oranges358&#39;, &#39;bananas13&#39;)
+
+str_replace_all(messyString, &#39;apples&#39;, &#39;helloWorld&#39;)
+</code></pre>
+
+<pre><code>[1] &quot;helloWorld112&quot; &quot; oranges358&quot;   &quot;bananas13&quot;    
+</code></pre>
+
+<pre><code class="r">str_replace_all(messyString, &#39;[a-z]&#39;, &#39;&#39;)
+</code></pre>
+
+<pre><code>[1] &quot;112&quot;  &quot; 358&quot; &quot;13&quot;  
+</code></pre>
+
+<pre><code class="r">str_replace_all(messyString, &#39;[0-9]&#39;, &#39;&#39;)
+</code></pre>
+
+<pre><code>[1] &quot;apples&quot;   &quot; oranges&quot; &quot;bananas&quot; 
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>VI. String manipulation in stringr</h3>
+<div class="slideContent" >
+<p><em>str_sub</em>: Extract part of a string by position</p>
+
+<pre><code class="r">messyString &lt;- c(&#39;apples&#39;, &#39;oranges&#39;, &#39;bananas&#39;)
+
+str_sub(messyString, start = -3)
+</code></pre>
+
+<pre><code>[1] &quot;les&quot; &quot;ges&quot; &quot;nas&quot;
+</code></pre>
+
+<pre><code class="r">str_sub(messyString, start  = 3)
+</code></pre>
+
+<pre><code>[1] &quot;ples&quot;  &quot;anges&quot; &quot;nanas&quot;
+</code></pre>
+
+<pre><code class="r">str_sub(messyString, end = -3)
+</code></pre>
+
+<pre><code>[1] &quot;appl&quot;  &quot;orang&quot; &quot;banan&quot;
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="none" data-transition-speed="default">
+<h3>VI. String manipulation in stringr</h3>
+<div class="slideContent" >
+<p><strong>Task:</strong> There are lots of problems with the band numbers in the file we&#39;ve been using. Clean them using stringr!
+<br style="clear:both" /></p>
+
+<p><img style="margin: 0px 15px 15px 0px; width:600px; height:500px;" src="http://www.catster.com/wp-content/uploads/2015/06/cat_with_string.jpg"></p>
 
 </div>
 
@@ -1445,7 +2157,7 @@ function commandsForSlide(indexh) {
       transition: 'none',
       transitionSpeed: 'default',
       rtl: false,
-      width: 960,
+      width: 1400,
       height: 700,
     
       dependencies: []
