@@ -183,5 +183,16 @@ getCombosByYearBuffer(jayCombos, jayCombosDate, yearBuffer = 5) %>%
 # Yup!
 
 
+#-------------------------------------------------------------------------------*
+# ---- WRITING YOUR COMBOS FILE TO YOUR WORKING DIRECTORY ----
+#-------------------------------------------------------------------------------*
 
+# If you're satisfied with your color combinations, write them to a csv file to 
+# print them out (from Excel ... blech):
 
+write_csv(
+  getCombosByYearBuffer(jayCombos,
+                        jayCombosDate,
+                        yearBuffer = 5),
+  'jayCombos.csv'
+  )
